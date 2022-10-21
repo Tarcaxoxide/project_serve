@@ -40,14 +40,11 @@ namespace Brain{
             }
         }
 
-        std::cout<<"Getting '"<<GetText<<"'"<<std::endl;
         size_t FileIndex=Data::ArtificialFileSystem.Search(GetText,File);
         if(FileIndex){
-            std::cout<<"File found"<<std::endl;
             Ret=File->Contents;
             Format::AddHeader(Ret,File->Type,true);
         }else{
-            std::cout<<"File not found"<<std::endl;
             Format::AddHeader(Ret,"text/html",false);
         }
 
