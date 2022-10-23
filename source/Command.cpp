@@ -3,11 +3,11 @@
 
 namespace Shell{
     Command_st* TestCommandA_Body(Command_st* Caller){
-        std::cout<<"Hello from TestCommandA_Body"<<std::endl;
+        Caller->ReturnString="Hello from TestCommandB_Body.";
         return Caller;
     }
     Command_st* TestCommandB_Body(Command_st* Caller){
-        std::cout<<"Hello from TestCommandB_Body"<<std::endl;
+        Caller->ReturnString="Hello from TestCommandB_Body.";
         return Caller;
     }
 };
@@ -60,12 +60,12 @@ namespace Shell{
         Command_st* PreviousCommand=(Command_st*)nullptr;
         Command_st* CurrentCommand=(Command_st*)&BaseCommand;
         for(size_t i=0;i<args.size()+1;i++){
-            PreviousCommand=CurrentCommand;
             if(args.size() == i){CurrentCommand=(*CurrentCommand)(args[i-1]);}else{CurrentCommand=(*CurrentCommand)(args[i]);}
-            if(CurrentCommand == nullptr){
+            if(CurrentCommand == nullptr || PreviousCommand == CurrentCommand){
                 break;
             }
+            PreviousCommand=CurrentCommand;
         }
-        return "Results Unimplemented.";
+        return ((CurrentCommand == nullptr) ? ((PreviousCommand == nullptr)? "Unknown command." : "Unsupported argument.") : CurrentCommand->ReturnString);
     }
 };
