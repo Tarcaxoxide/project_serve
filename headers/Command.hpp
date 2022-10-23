@@ -19,7 +19,7 @@ namespace Shell{
         Command_st(std::string CommandString);
         ~Command_st();
         Command_st* operator()(std::string Argument);
-        void AddSubCommand(Command_st* SubCommands);
+        Command_st* AddSubCommand(Command_st* SubCommands);
     };
     void Initialize();
     std::string Command(std::deque<std::string> args,bool& KeepGoing);

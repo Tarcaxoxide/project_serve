@@ -2,8 +2,12 @@
 
 
 namespace Shell{
-    Command_st* TestCommandBody(Command_st* Caller){
-        std::cout<<"Hello from TestCommandBody"<<std::endl;
+    Command_st* TestCommandA_Body(Command_st* Caller){
+        std::cout<<"Hello from TestCommandA_Body"<<std::endl;
+        return Caller;
+    }
+    Command_st* TestCommandB_Body(Command_st* Caller){
+        std::cout<<"Hello from TestCommandB_Body"<<std::endl;
         return Caller;
     }
 };
@@ -38,25 +42,25 @@ namespace Shell{
         }
         return nullptr;
     }
-    void Command_st::AddSubCommand(Command_st* nCommand){
+    Command_st* Command_st::AddSubCommand(Command_st* nCommand){
         SubCommands.push_back(nCommand);
+        return nCommand;
     }
     Command_st BaseCommand("BaseCommand");
     void Initialize(){
-        BaseCommand.AddSubCommand(new Command_st("TestCommand",TestCommandBody));
+        Command_st* nCommand=BaseCommand.AddSubCommand(new Command_st("Test"));
+        nCommand->AddSubCommand(new Command_st("a",TestCommandA_Body));
+        nCommand->AddSubCommand(new Command_st("b",TestCommandA_Body));
     }
     std::string Command(std::deque<std::string> args,bool& KeepGoing){
         
         Command_st* PreviousCommand=(Command_st*)nullptr;
         Command_st* CurrentCommand=(Command_st*)&BaseCommand;
-        for(size_t i=0;i<args.size();i++){
+        for(size_t i=0;i<args.size()+1;i++){
             PreviousCommand=CurrentCommand;
-            std::cout<<i<<" arg = "<<args[i]<<std::endl;
-            CurrentCommand=(*CurrentCommand)(args[i]);
+            if(args.size() == i){CurrentCommand=(*CurrentCommand)(args[i-1]);}else{CurrentCommand=(*CurrentCommand)(args[i]);}
             if(CurrentCommand == nullptr){
                 break;
-            }else{
-                CurrentCommand=(*CurrentCommand)(args[i]);
             }
         }
         return "Results Unimplemented.";
