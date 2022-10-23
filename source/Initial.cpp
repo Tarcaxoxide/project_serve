@@ -32,6 +32,7 @@ void RunServer(int PortNumber){
 
 int main(){
     Brain::Initialize();
+    Shell::Initialize();
     std::thread ServerThread(RunServer,8083);
     std::string UserInput;
 
@@ -39,7 +40,7 @@ int main(){
         std::getline(std::cin,UserInput);
         
         std::deque<std::string> args=Format::split(UserInput," ");
-        std::string r=Command(args,Running);
+        std::string r=Shell::Command(args,Running);
         std::cout<<r<<std::endl;
     }
     sleep(30);

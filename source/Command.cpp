@@ -1,101 +1,64 @@
 #include<Command.hpp>
 
-std::string Command(std::deque<std::string> args,bool& KeepGoing){
-    std::string Ret="";
-    KeepGoing=true;
-    if(args[0] == "Exit"){
-            KeepGoing=false;
+
+namespace Shell{
+    Command_st* TestCommandBody(Command_st* Caller){
+        std::cout<<"Hello from TestCommandBody"<<std::endl;
+        return Caller;
+    }
+};
+
+namespace Shell{
+    Command_st::Command_st(std::string CommandString,std::deque<Command_st*> SubCommands){
+        this->CommandString=CommandString;
+        ExecutableBody=nullptr;
+    }
+    Command_st::Command_st(std::string CommandString,Command_st* (*ExecutableBody)(Command_st* Caller)){
+        this->CommandString=CommandString;
+        this->ExecutableBody=ExecutableBody;
+    }
+    Command_st::Command_st(std::string CommandString){
+        ExecutableBody=nullptr;
+        this->CommandString=CommandString;
+    }
+    Command_st::~Command_st(){
+        for(size_t i=0;i<SubCommands.size();i++){
+            delete[] SubCommands[i];
         }
-        else if(args[0] == "ArtificialFileSystem"||args[0] == "AFS"){
-            if(args.size() < 2){
-                Ret+=std::string("please provide a SubCommand, Type 'Commands' as the SubCommand for a list of SubCommands.");
-            }
-            else if(args[1] == "Commands"){
-                Ret+=std::string("Create\tCreates a File or Folder (path taken as argument).\n");
-                Ret+=std::string("Delete\tDeletes a File or Folder (path taken as argument).\n");
-                Ret+=std::string("Find\tFinds if a File or Folder exists (path taken as argument).\n");
-                Ret+=std::string("Commands\tDisplays this message.");
-            }
-            else if(args[1] == "Find"){
-                if(args.size() < 3){
-                    Ret+=std::string("No path specified.");
-                    //continue;
-                }
-                std::deque<std::string> TokenizedPath=Format::split(args[2],"/");
-                if(TokenizedPath[TokenizedPath.size()-1].size() > 0){
-                    Data::File_st* File;
-                    size_t FileIndex=Data::ArtificialFileSystem.Search(args[2],File);
-                    if(FileIndex){
-                        Ret+=std::string("File found");
-                    }else{
-                        Ret+=std::string("File not found.");
-                    }
-                }else{
-                    Data::Folder_st* Folder;
-                    size_t FolderIndex=Data::ArtificialFileSystem.Search(args[2],Folder);
-                    if(FolderIndex){
-                        Ret+=std::string("Folder found.");
-                    }else{
-                        Ret+=std::string("Folder not found.");
-                    }
-                }
-            }
-            else if(args[1] == "Create"){
-                if(args.size() < 3){
-                    Ret+=std::string("No path specified.");
-                    //continue;
-                }
-                std::deque<std::string> TokenizedPath=Format::split(args[2],"/");
-                if(TokenizedPath[TokenizedPath.size()-1].size() >0){
-                    Data::File_st* File;
-                    size_t FileIndex=Data::ArtificialFileSystem.Search(args[2],File);
-                    if(FileIndex){
-                        Ret+=std::string("File not created.");
-                    }else{
-                        Data::ArtificialFileSystem.Create(args[2]);
-                        Ret+=std::string("File created.");
-                    }
-                }else{
-                    Data::File_st* Folder;
-                    size_t FolderIndex=Data::ArtificialFileSystem.Search(args[2],Folder);
-                    if(FolderIndex){
-                        Ret+=std::string("Folder not created.");
-                    }else{
-                        Data::ArtificialFileSystem.Create(args[2]);
-                        Ret+=std::string("Folder created.");
-                    }
-                }
-            }
-            else if(args[1] == "Delete"){
-                if(args.size() < 3){
-                    Ret+=std::string("No path specified.");
-                    //continue;
-                }
-                std::deque<std::string> TokenizedPath=Format::split(args[2],"/");
-                if(TokenizedPath[TokenizedPath.size()-1].size() >0){
-                    Data::File_st* File;
-                    size_t FileIndex=Data::ArtificialFileSystem.Search(args[2],File);
-                    if(FileIndex){
-                        Ret+=std::string("File deleted.");
-                        Data::ArtificialFileSystem.Delete(args[2]);
-                    }else{
-                        Ret+=std::string("File not deleted.");
-                    }
-                }else{
-                    Data::File_st* Folder;
-                    size_t FolderIndex=Data::ArtificialFileSystem.Search(args[2],Folder);
-                    if(FolderIndex){
-                        Ret+=std::string("Folder deleted.");
-                        Data::ArtificialFileSystem.Delete(args[2]);
-                    }else{
-                        Ret+=std::string("Folder not deleted.");
-                    }
-                }
-            }
-            else{
-                
+        SubCommands.clear();
+    }
+    Command_st* Command_st::operator()(std::string Argument){
+        this->Argument=Argument;
+        if(ExecutableBody != nullptr){
+            return (*ExecutableBody)(this);
+        }else{
+            for(size_t i=0;i<SubCommands.size();i++){
+                if(SubCommands[i]->CommandString == Argument)return SubCommands[i];
             }
         }
-        else{Ret+=std::string("Uknown Command:\'")+args[0]+std::string("\'");}
-        return Ret;
-}
+        return nullptr;
+    }
+    void Command_st::AddSubCommand(Command_st* nCommand){
+        SubCommands.push_back(nCommand);
+    }
+    Command_st BaseCommand("BaseCommand");
+    void Initialize(){
+        BaseCommand.AddSubCommand(new Command_st("TestCommand",TestCommandBody));
+    }
+    std::string Command(std::deque<std::string> args,bool& KeepGoing){
+        
+        Command_st* PreviousCommand=(Command_st*)nullptr;
+        Command_st* CurrentCommand=(Command_st*)&BaseCommand;
+        for(size_t i=0;i<args.size();i++){
+            PreviousCommand=CurrentCommand;
+            std::cout<<i<<" arg = "<<args[i]<<std::endl;
+            CurrentCommand=(*CurrentCommand)(args[i]);
+            if(CurrentCommand == nullptr){
+                break;
+            }else{
+                CurrentCommand=(*CurrentCommand)(args[i]);
+            }
+        }
+        return "Results Unimplemented.";
+    }
+};
