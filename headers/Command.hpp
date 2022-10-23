@@ -12,14 +12,16 @@
 namespace Shell{
     struct Command_st{
         std::deque<Command_st*> SubCommands;
-        std::string Argument,CommandString,ReturnString;
+        std::string CommandString,ReturnString;
+        std::deque<std::string>* Arguments;
+        size_t ArgumentIndex;
         static Command_st* BaseCommandReference;
         Command_st* (*ExecutableBody)(Command_st* Caller);
         Command_st(std::string CommandString,std::deque<Command_st*> SubCommands);
         Command_st(std::string CommandString,Command_st* (*ExecutableBody)(Command_st* Caller));
         Command_st(std::string CommandString);
         ~Command_st();
-        Command_st* operator()(std::string Argument);
+        Command_st* operator()(size_t ArgumentIndex,std::deque<std::string>* Arguments);
         Command_st* AddSubCommand(Command_st* SubCommands);
     };
     void Initialize();
