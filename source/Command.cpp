@@ -13,15 +13,19 @@ namespace Shell{
 };
 
 namespace Shell{
+    Command_st* Command_st::BaseCommandReference=nullptr;
     Command_st::Command_st(std::string CommandString,std::deque<Command_st*> SubCommands){
+        if(BaseCommandReference == nullptr)BaseCommandReference=this;
         this->CommandString=CommandString;
         ExecutableBody=nullptr;
     }
     Command_st::Command_st(std::string CommandString,Command_st* (*ExecutableBody)(Command_st* Caller)){
+        if(BaseCommandReference == nullptr)BaseCommandReference=this;
         this->CommandString=CommandString;
         this->ExecutableBody=ExecutableBody;
     }
     Command_st::Command_st(std::string CommandString){
+        if(BaseCommandReference == nullptr)BaseCommandReference=this;
         ExecutableBody=nullptr;
         this->CommandString=CommandString;
     }
@@ -53,7 +57,6 @@ namespace Shell{
         nCommand->AddSubCommand(new Command_st("b",TestCommandA_Body));
     }
     std::string Command(std::deque<std::string> args,bool& KeepGoing){
-        
         Command_st* PreviousCommand=(Command_st*)nullptr;
         Command_st* CurrentCommand=(Command_st*)&BaseCommand;
         for(size_t i=0;i<args.size()+1;i++){
