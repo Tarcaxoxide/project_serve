@@ -2,8 +2,8 @@
 
 
 namespace Shell{
-    Command_st* TestCommandA_Body(Command_st* Caller){
-        Caller->ReturnString=std::string("Hello from TestCommandB_Body. Arguments provided [");
+    Command_st* Test_Body(Command_st* Caller){
+        Caller->ReturnString=std::string("Hello World. Arguments provided [");
         for(size_t i=(Caller->ArgumentIndex);i<(*Caller->Arguments).size();i++){
             Caller->ReturnString+=(*Caller->Arguments)[i];
             if(i+1<(*Caller->Arguments).size())Caller->ReturnString+=std::string(",");
@@ -11,13 +11,8 @@ namespace Shell{
         Caller->ReturnString+=std::string("]");
         return Caller;
     }
-    Command_st* TestCommandB_Body(Command_st* Caller){
-        Caller->ReturnString=std::string("Hello from TestCommandB_Body. [");
-        for(size_t i=(Caller->ArgumentIndex);i<(*Caller->Arguments).size();i++){
-            Caller->ReturnString+=(*Caller->Arguments)[i];
-            if(i+1<(*Caller->Arguments).size())Caller->ReturnString+=std::string(",");
-        }
-        Caller->ReturnString+=std::string("]");
+    Command_st* Filesystem_Create_Body(Command_st* Caller){
+
         return Caller;
     }
 };
@@ -63,10 +58,14 @@ namespace Shell{
         return nCommand;
     }
     Command_st BaseCommand("BaseCommand");
+};
+
+namespace Shell{
     void Initialize(){
-        Command_st* nCommand=BaseCommand.AddSubCommand(new Command_st("Test"));
-        nCommand->AddSubCommand(new Command_st("a",TestCommandA_Body));
-        nCommand->AddSubCommand(new Command_st("b",TestCommandA_Body));
+        Command_st* Command_Test=BaseCommand.AddSubCommand(new Command_st("Test",Test_Body));
+        Command_st* Command_Filesystem=BaseCommand.AddSubCommand(new Command_st("Filesystem"));
+        Command_st* Command_Filesystem_Create=Command_Filesystem->AddSubCommand(new Command_st("Create",Filesystem_Create_Body));
+        
     }
     std::string Command(std::deque<std::string> args,bool& KeepGoing){
         Command_st* PreviousCommand=(Command_st*)nullptr;
