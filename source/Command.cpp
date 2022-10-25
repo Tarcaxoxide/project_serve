@@ -3,16 +3,41 @@
 
 namespace Shell{
     Command_st* Test_Body(Command_st* Caller){
-        Caller->ReturnString=std::string("Hello World. Arguments provided [");
+        //this is just a test function that is used to make sure the commands are working correctly\
+          and to server as a template to create more command bodies.
+        Caller->ReturnString=std::string("Test_Body, Arguments provided [");
         for(size_t i=(Caller->ArgumentIndex);i<(*Caller->Arguments).size();i++){
             Caller->ReturnString+=(*Caller->Arguments)[i];
             if(i+1<(*Caller->Arguments).size())Caller->ReturnString+=std::string(",");
         }
         Caller->ReturnString+=std::string("]");
         return Caller;
+        /*
+        the reason we return the caller even though it's doesn't seem necessary here, 
+         we can tell the calling function that we failed by returning nullptr or
+         we can return the pointer of a different command to be executed.
+        */
     }
     Command_st* Filesystem_Create_Body(Command_st* Caller){
-
+        std::string Path=(*Caller->Arguments)[(Caller->ArgumentIndex)];
+        std::deque<std::string> TokenizedPath=Format::split(Path,"/");
+        Caller->ReturnString="Filesystem_Create_Body, Path = ";
+        
+        if(TokenizedPath[TokenizedPath.size()-1].size() < 1){
+            Filesystem::Folder_st* Folder = Filesystem::FilesystemManager.FolderCreate(Path);
+            if(Folder == nullptr){
+                Caller->ReturnString=std::string("Failed to create folder ")+Path;
+            }else{
+                Caller->ReturnString=std::string("Created folder ")+Path;
+            }
+        }else{
+            Filesystem::File_st* File = Filesystem::FilesystemManager.FileCreate(Path);
+            if(File == nullptr){
+                Caller->ReturnString=std::string("Failed to create file ")+Path;
+            }else{
+                Caller->ReturnString=std::string("Created file ")+Path;
+            }
+        }
         return Caller;
     }
 };
@@ -45,7 +70,9 @@ namespace Shell{
         this->Arguments=Arguments;
         std::string Argument = (*Arguments)[ArgumentIndex];
         if(ExecutableBody != nullptr){
-            return (*ExecutableBody)(this);
+            Command_st* Return = (*ExecutableBody)(this);
+            Return->Arguments->clear();
+            return Return;
         }else{
             for(size_t i=0;i<SubCommands.size();i++){
                 if(SubCommands[i]->CommandString == Argument)return SubCommands[i];

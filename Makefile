@@ -32,7 +32,7 @@ $(OBJDIR)/%_cpp.o:$(SRCDIR)/%.cpp
 $(BUILDDIR)/$(OSNAME): $(OBJS)
 	clang++ $(LDFLAGS) -o $@ $^
 
-.PHONY: clean run setup
+.PHONY: clean run compile setup
 setup:
 	@mkdir -p $(BUILDDIR)
 	@mkdir -p $(SRCDIR)
@@ -40,6 +40,9 @@ setup:
 
 clean:
 	@rm -frv $(OBJDIR)/* $(BUILDDIR)/*
+
+
+compile: $(BUILDDIR)/$(OSNAME)
 
 run: $(BUILDDIR)/$(OSNAME)
 	./$(BUILDDIR)/$(OSNAME)

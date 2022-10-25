@@ -2,10 +2,9 @@
 #include<string>
 #include<deque>
 
-#include<Network/Server.hpp>
+#include<Server.hpp>
 #include<Format.hpp>
 #include<Brain.hpp>
-#include<Data/ArtificialFileSystem.hpp>
 #include<Command.hpp>
 
 static bool Running{true};

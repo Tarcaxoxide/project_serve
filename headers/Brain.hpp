@@ -1,12 +1,10 @@
 #pragma once
 
-#include<Network/Server.hpp>
+#include<Server.hpp>
 #include<Format.hpp>
-#include<Data/Profile.hpp>
 #include<iostream>
 #include<string>
 #include<string.h>
-#include<Data/ArtificialFileSystem.hpp>
 
 namespace Brain{
     void Initialize();

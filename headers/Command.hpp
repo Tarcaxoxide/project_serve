@@ -1,13 +1,12 @@
 #pragma once
 
-#include<iostream>
-#include<string>
-#include<deque>
-#include<Network/Server.hpp>
-#include<Format.hpp>
-#include<Brain.hpp>
-#include<Data/ArtificialFileSystem.hpp>
-
+#include <iostream>
+#include <string>
+#include <deque>
+#include <Server.hpp>
+#include <Format.hpp>
+#include <Brain.hpp>
+#include <Filesystem.hpp>
 
 namespace Shell{
     struct Command_st{

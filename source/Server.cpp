@@ -1,4 +1,4 @@
-#include<Network/Server.hpp>
+#include<Server.hpp>
 
 namespace Network{
     void Socket_st::Buffer_st::Erase(){
