@@ -21,8 +21,6 @@ namespace Shell{
     Command_st* Filesystem_Create_Body(Command_st* Caller){
         std::string Path=(*Caller->Arguments)[(Caller->ArgumentIndex)];
         std::deque<std::string> TokenizedPath=Format::split(Path,"/");
-        Caller->ReturnString="Filesystem_Create_Body, Path = ";
-        
         if(TokenizedPath[TokenizedPath.size()-1].size() < 1){
             Filesystem::Folder_st* Folder = Filesystem::FilesystemManager.FolderCreate(Path);
             if(Folder == nullptr){
@@ -30,6 +28,7 @@ namespace Shell{
             }else{
                 Caller->ReturnString=std::string("Created folder ")+Path;
             }
+            Caller->ReturnPtr=(void*)Folder;
         }else{
             Filesystem::File_st* File = Filesystem::FilesystemManager.FileCreate(Path);
             if(File == nullptr){
@@ -37,6 +36,30 @@ namespace Shell{
             }else{
                 Caller->ReturnString=std::string("Created file ")+Path;
             }
+            Caller->ReturnPtr=(void*)File;
+        }
+        return Caller;
+    }
+    Command_st* Filesystem_Find_Body(Command_st* Caller){
+        std::string Path=(*Caller->Arguments)[(Caller->ArgumentIndex)];
+        std::deque<std::string> TokenizedPath=Format::split(Path,"/");
+        
+        if(TokenizedPath[TokenizedPath.size()-1].size() < 1){
+            Filesystem::Folder_st* Folder = Filesystem::FilesystemManager.FolderSearch(Path);
+            if(Folder == nullptr){
+                Caller->ReturnString=std::string("Not found");
+            }else{
+                Caller->ReturnString=std::string("Folder found");
+            }
+            Caller->ReturnPtr=(void*)Folder;
+        }else{
+            Filesystem::File_st* File = Filesystem::FilesystemManager.FileSearch(Path);
+            if(File == nullptr){
+                Caller->ReturnString=std::string("Not found");
+            }else{
+                Caller->ReturnString=std::string("File found");
+            }
+            Caller->ReturnPtr=(void*)File;
         }
         return Caller;
     }
@@ -66,6 +89,8 @@ namespace Shell{
         SubCommands.clear();
     }
     Command_st* Command_st::operator()(size_t ArgumentIndex,std::deque<std::string>* Arguments){
+        ReturnPtr=(void*)nullptr;
+        ReturnString="";
         this->ArgumentIndex=ArgumentIndex;
         this->Arguments=Arguments;
         std::string Argument = (*Arguments)[ArgumentIndex];
@@ -92,6 +117,7 @@ namespace Shell{
         Command_st* Command_Test=BaseCommand.AddSubCommand(new Command_st("Test",Test_Body));
         Command_st* Command_Filesystem=BaseCommand.AddSubCommand(new Command_st("Filesystem"));
         Command_st* Command_Filesystem_Create=Command_Filesystem->AddSubCommand(new Command_st("Create",Filesystem_Create_Body));
+        Command_st* Command_Filesystem_Find=Command_Filesystem->AddSubCommand(new Command_st("Find",Filesystem_Find_Body));
         
     }
     std::string Command(std::deque<std::string> args,bool& KeepGoing){

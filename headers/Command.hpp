@@ -13,6 +13,7 @@ namespace Shell{
         std::deque<Command_st*> SubCommands;
         std::string CommandString,ReturnString;
         std::deque<std::string>* Arguments;
+        void* ReturnPtr{nullptr};
         size_t ArgumentIndex;
         static Command_st* BaseCommandReference;
         Command_st* (*ExecutableBody)(Command_st* Caller);
