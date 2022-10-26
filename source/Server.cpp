@@ -66,7 +66,6 @@ namespace Network{
           perror( std::string("Failed to grab connection.").c_str());
           exit(EXIT_FAILURE);
         }
-        std::cout << "Grabbed connection" << std::endl;
 
         Client->Port = ntohs(Client->SocketAddress.sin_port);
         Client->SocketAddress.sin_addr.s_addr = Socket.SocketAddress.sin_addr.s_addr;
@@ -76,21 +75,17 @@ namespace Network{
 
     }
     void Server_cl::ReadConnection(Socket_st*& Client){
-        std::cout<<"Reading from connection"<<std::endl;
         Client->Buffer->BytesOfContent = read(Client->FileDescriptor, Client->Buffer->ContentsOfBuffer, Client->Buffer->SizeOfBuffer);
     }
     void Server_cl::WriteConnection(Socket_st*& Client){
-        std::cout<<"Writing to connection"<<std::endl;
         send(Client->FileDescriptor, Client->Buffer->ContentsOfBuffer, Client->Buffer->BytesOfContent, 0);
     }
     void Server_cl::CloseConnection(Socket_st*& Client){
-        std::cout<<"Closing connection"<<std::endl;
         close(Client->FileDescriptor);
         delete[] Client;
         Client=nullptr;
     }
     Server_cl::~Server_cl(){
-        std::cout<<"Closing Server"<<std::endl;
         close(Socket.FileDescriptor);
     }
 };

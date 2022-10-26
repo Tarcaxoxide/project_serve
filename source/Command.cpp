@@ -3,20 +3,13 @@
 
 namespace Shell{
     Command_st* Test_Body(Command_st* Caller){
-        //this is just a test function that is used to make sure the commands are working correctly\
-          and to server as a template to create more command bodies.
         Caller->ReturnString=std::string("Test_Body, Arguments provided [");
         for(size_t i=(Caller->ArgumentIndex);i<(*Caller->Arguments).size();i++){
-            Caller->ReturnString+=(*Caller->Arguments)[i];
-            if(i+1<(*Caller->Arguments).size())Caller->ReturnString+=std::string(",");
+            Caller->ReturnString+=std::string("(")+std::to_string(i)+std::string(")");
+            Caller->ReturnString+=(*Caller->Arguments)[i]+std::string((i<(*Caller->Arguments).size()-1)? "," : "");
         }
         Caller->ReturnString+=std::string("]");
         return Caller;
-        /*
-        the reason we return the caller even though it's doesn't seem necessary here, 
-         we can tell the calling function that we failed by returning nullptr or
-         we can return the pointer of a different command to be executed.
-        */
     }
     Command_st* Filesystem_Create_Body(Command_st* Caller){
         std::string Path=(*Caller->Arguments)[(Caller->ArgumentIndex)];
@@ -25,7 +18,6 @@ namespace Shell{
             Filesystem::Folder_st* Folder = Filesystem::FilesystemManager.FolderCreate(Path);
             if(Folder == nullptr){
                 Caller->ReturnString=std::string("Failed to create folder ")+Path;
-                return nullptr;
             }else{
                 Caller->ReturnString=std::string("Created folder ")+Path;
                 Caller->ReturnPtr=(void*)Folder;
@@ -34,7 +26,6 @@ namespace Shell{
             Filesystem::File_st* File = Filesystem::FilesystemManager.FileCreate(Path);
             if(File == nullptr){
                 Caller->ReturnString=std::string("Failed to create file ")+Path;
-                return nullptr;
             }else{
                 Caller->ReturnString=std::string("Created file ")+Path;
                 Caller->ReturnPtr=(void*)File;
@@ -53,7 +44,6 @@ namespace Shell{
                 Caller->ReturnPtr=(void*)Folder;
             }else{
                 Caller->ReturnString=std::string("Folder found");
-                return nullptr;
             }
         }else{
             Filesystem::File_st* File = Filesystem::FilesystemManager.FileSearch(Path);
@@ -62,7 +52,6 @@ namespace Shell{
                 Caller->ReturnPtr=(void*)File;
             }else{
                 Caller->ReturnString=std::string("File found");
-                //return nullptr;
             }
         }
         return Caller;
@@ -80,7 +69,6 @@ namespace Shell{
                 Caller->ReturnString=std::string("Folder deleted");
             }else{
                 Caller->ReturnString=std::string("Folder not deleted");
-                //return nullptr;
             }
         }else{
             Filesystem::Folder_st* Folder = Filesystem::FilesystemManager.FolderSearch(Path);
@@ -88,15 +76,74 @@ namespace Shell{
                 Caller->ReturnString=std::string("File deleted");
             }else{
                 Caller->ReturnString=std::string("File not deleted");
-                //return nullptr;
             }
 
         }
         return Caller;
     }
-    
-};
+    Command_st* Filesystem_Get_Body(Command_st* Caller){
+        //Filesystem_Get_Body, Arguments provided [(2)test.txt,(3)ContentType]
+        if((*Caller->Arguments).size() == 3){
+            Caller->ReturnString="Invalid amount of arguments: `Filesystem Get [File path] [Property]`";
+            return Caller;
+        }
+        std::string Path=(*Caller->Arguments)[2];
+        std::string Property=(*Caller->Arguments)[3];
 
+        Filesystem::File_st* File = Filesystem::FilesystemManager.FileSearch(Path);
+        if(File == nullptr){
+            Caller->ReturnString=std::string("File Not found");
+            Caller->ReturnPtr=(void*)File;
+        }else{
+            //Caller->ReturnString=std::string("File found");
+            if(Property == "Content"){
+                Caller->ReturnString=File->Contents;
+            }
+            else if(Property == "Type"){
+                Caller->ReturnString=File->ContentType;
+            }
+            else{
+                Caller->ReturnString="Unknown Property";
+            }
+        }
+        return Caller;
+    }
+    Command_st* Filesystem_Set_Body(Command_st* Caller){
+        //Filesystem_Get_Body, Arguments provided [(2)test.txt,(3)ContentType]
+        if((*Caller->Arguments).size() < 4){
+            Caller->ReturnString="Invalid amount of arguments: `Filesystem Set [File path] [Property] [Value]`";
+            return Caller;
+        }
+        std::string Path=(*Caller->Arguments)[2];
+        std::string Property=(*Caller->Arguments)[3];
+        std::string PropertyValue;
+        for(size_t i=4;i<(*Caller->Arguments).size();i++){
+            PropertyValue+=(*Caller->Arguments)[i]+std::string((i<(*Caller->Arguments).size()-1)? " " : "");
+        }
+        Filesystem::File_st* File = Filesystem::FilesystemManager.FileSearch(Path);
+        if(File == nullptr){
+            Caller->ReturnString=std::string("File Not found");
+            Caller->ReturnPtr=(void*)File;
+        }else{
+            //Caller->ReturnString=std::string("File found");
+            if(Property == "Content"){
+                Caller->ReturnString=File->Contents;
+                File->Contents=PropertyValue;
+                Caller->ReturnString=Property+std::string(" Set");
+            }
+            else if(Property == "Type"){
+                File->ContentType=PropertyValue;
+                Caller->ReturnString=Property+std::string(" Set");
+            }
+            else{
+                Caller->ReturnString="Unknown Property";
+            }
+        }
+        return Caller;
+    }
+    //Command_st* Filesystem_Save_Body(Command_st* Caller){}
+    //Command_st* Filesystem_Load_Body(Command_st* Caller){}
+};
 namespace Shell{
     Command_st* Command_st::BaseCommandReference=nullptr;
     Command_st::Command_st(std::string CommandString,std::deque<Command_st*> SubCommands){
@@ -151,6 +198,8 @@ namespace Shell{
         Command_st* Command_Filesystem_Create=Command_Filesystem->AddSubCommand(new Command_st("Create",Filesystem_Create_Body));
         Command_st* Command_Filesystem_Find=Command_Filesystem->AddSubCommand(new Command_st("Find",Filesystem_Find_Body));
         Command_st* Command_Filesystem_Delete=Command_Filesystem->AddSubCommand(new Command_st("Delete",Filesystem_Delete_Body));
+        Command_st* Command_Filesystem_Get=Command_Filesystem->AddSubCommand(new Command_st("Get",Filesystem_Get_Body));
+        Command_st* Command_Filesystem_Set=Command_Filesystem->AddSubCommand(new Command_st("Set",Filesystem_Set_Body));
     }
     std::string Command(std::deque<std::string> args,bool& KeepGoing){
         Command_st* PreviousCommand=(Command_st*)nullptr;

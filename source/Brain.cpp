@@ -18,11 +18,14 @@ namespace Brain{
                 trig=true;
             }
         }
-
-        Ret=std::string("(Unimplemented):")+GetText;
-        
-        Format::AddHeader(Ret,"text/html",false);
-
+        Filesystem::File_st* File = Filesystem::FilesystemManager.FileSearch(GetText);
+        if(File == nullptr){
+            Ret="404 file not found.";
+            Format::AddHeader(Ret,"text/html",false);
+        }else{
+            Ret=File->Contents;
+            Format::AddHeader(Ret,File->ContentType,true);
+        }
         return Ret;
     }
 };

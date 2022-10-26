@@ -26,7 +26,7 @@ namespace Filesystem{//Folder_st
         File_st* File = FindSubFile(tName);
         if(File != nullptr)return nullptr;//don't create a file if it exist already.
         if(tName.size() < 1)return nullptr;//don't create a file with a name of 0 length.
-        SubFiles.push_back(new File_st{tName,"html/text",""});
+        SubFiles.push_back(new File_st{tName,"text/html",""});
         return SubFiles[SubFiles.size()-1];
     }
     Folder_st* Folder_st::CreateFolder(std::string tName){
