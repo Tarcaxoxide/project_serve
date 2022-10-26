@@ -32,7 +32,7 @@ $(OBJDIR)/%_cpp.o:$(SRCDIR)/%.cpp
 $(BUILDDIR)/$(OSNAME): $(OBJS)
 	clang++ $(LDFLAGS) -o $@ $^
 
-.PHONY: clean run compile setup
+.PHONY: clean run compile setup push
 setup:
 	@mkdir -p $(BUILDDIR)
 	@mkdir -p $(SRCDIR)
@@ -44,6 +44,11 @@ clean:
 
 compile: $(BUILDDIR)/$(OSNAME)
 
-run: $(BUILDDIR)/$(OSNAME)
+push: clean compile
+	git add .
+	git commit -am "$(shell date)" 
+	git push "https://loganer%40vivaldi.net:$(shell cat ../git_token.txt)@github.com/Tarcaxoxide/project_serve.git"
+
+run: clean compile
 	./$(BUILDDIR)/$(OSNAME)
 	
