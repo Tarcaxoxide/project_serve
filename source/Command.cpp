@@ -25,18 +25,20 @@ namespace Shell{
             Filesystem::Folder_st* Folder = Filesystem::FilesystemManager.FolderCreate(Path);
             if(Folder == nullptr){
                 Caller->ReturnString=std::string("Failed to create folder ")+Path;
+                return nullptr;
             }else{
                 Caller->ReturnString=std::string("Created folder ")+Path;
+                Caller->ReturnPtr=(void*)Folder;
             }
-            Caller->ReturnPtr=(void*)Folder;
         }else{
             Filesystem::File_st* File = Filesystem::FilesystemManager.FileCreate(Path);
             if(File == nullptr){
                 Caller->ReturnString=std::string("Failed to create file ")+Path;
+                return nullptr;
             }else{
                 Caller->ReturnString=std::string("Created file ")+Path;
+                Caller->ReturnPtr=(void*)File;
             }
-            Caller->ReturnPtr=(void*)File;
         }
         return Caller;
     }
@@ -48,21 +50,51 @@ namespace Shell{
             Filesystem::Folder_st* Folder = Filesystem::FilesystemManager.FolderSearch(Path);
             if(Folder == nullptr){
                 Caller->ReturnString=std::string("Not found");
+                Caller->ReturnPtr=(void*)Folder;
             }else{
                 Caller->ReturnString=std::string("Folder found");
+                return nullptr;
             }
-            Caller->ReturnPtr=(void*)Folder;
         }else{
             Filesystem::File_st* File = Filesystem::FilesystemManager.FileSearch(Path);
             if(File == nullptr){
                 Caller->ReturnString=std::string("Not found");
+                Caller->ReturnPtr=(void*)File;
             }else{
                 Caller->ReturnString=std::string("File found");
+                //return nullptr;
             }
-            Caller->ReturnPtr=(void*)File;
         }
         return Caller;
     }
+    Command_st* Filesystem_Delete_Body(Command_st* Caller){
+        std::string Path=(*Caller->Arguments)[(Caller->ArgumentIndex)];
+        std::deque<std::string> TokenizedPath=Format::split(Path,"/");
+        if(TokenizedPath[TokenizedPath.size()-1].size() < 1){
+            std::string TargetPath="";
+            for(size_t i=0;i<TokenizedPath.size()-2;i++){
+                TargetPath+=TokenizedPath[i]+std::string((i<TokenizedPath.size()-3)? "/" : "");
+            }
+            Filesystem::Folder_st* Folder = Filesystem::FilesystemManager.FolderSearch(TargetPath);
+            if(Folder->DeleteFolder(TokenizedPath[TokenizedPath.size()-2])){
+                Caller->ReturnString=std::string("Folder deleted");
+            }else{
+                Caller->ReturnString=std::string("Folder not deleted");
+                //return nullptr;
+            }
+        }else{
+            Filesystem::Folder_st* Folder = Filesystem::FilesystemManager.FolderSearch(Path);
+            if(Folder->DeleteFile(TokenizedPath[TokenizedPath.size()-1])){
+                Caller->ReturnString=std::string("File deleted");
+            }else{
+                Caller->ReturnString=std::string("File not deleted");
+                //return nullptr;
+            }
+
+        }
+        return Caller;
+    }
+    
 };
 
 namespace Shell{
@@ -118,7 +150,7 @@ namespace Shell{
         Command_st* Command_Filesystem=BaseCommand.AddSubCommand(new Command_st("Filesystem"));
         Command_st* Command_Filesystem_Create=Command_Filesystem->AddSubCommand(new Command_st("Create",Filesystem_Create_Body));
         Command_st* Command_Filesystem_Find=Command_Filesystem->AddSubCommand(new Command_st("Find",Filesystem_Find_Body));
-        
+        Command_st* Command_Filesystem_Delete=Command_Filesystem->AddSubCommand(new Command_st("Delete",Filesystem_Delete_Body));
     }
     std::string Command(std::deque<std::string> args,bool& KeepGoing){
         Command_st* PreviousCommand=(Command_st*)nullptr;
