@@ -8,6 +8,7 @@
 #include <unistd.h> // For read
 #include <deque>
 #include <string>
+#include <Variables.hpp>
 
 namespace Network{
   struct Socket_st{

@@ -3,6 +3,7 @@
 #include <string>
 #include <deque>
 #include <Format.hpp>
+#include <Variables.hpp>
 
 namespace Filesystem{
     struct File_st{

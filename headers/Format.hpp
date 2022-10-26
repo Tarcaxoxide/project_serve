@@ -3,6 +3,7 @@
 #include <deque>
 #include <string>
 #include <jsoncpp/json/json.h>
+#include <Variables.hpp>
 
 namespace Format{
     

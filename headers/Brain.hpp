@@ -1,11 +1,12 @@
 #pragma once
 
-#include<Server.hpp>
-#include<Format.hpp>
-#include<iostream>
-#include<string>
-#include<string.h>
+#include <Server.hpp>
+#include <Format.hpp>
+#include <iostream>
+#include <string>
+#include <string.h>
 #include <Filesystem.hpp>
+#include <Variables.hpp>
 
 namespace Brain{
     void Initialize();

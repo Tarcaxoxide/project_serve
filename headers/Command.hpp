@@ -7,19 +7,21 @@
 #include <Format.hpp>
 #include <Brain.hpp>
 #include <Filesystem.hpp>
+#include <Variables.hpp>
+#include <cstdlib>
 
 namespace Shell{
     struct Command_st{
         std::deque<Command_st*> SubCommands;
-        std::string CommandString,ReturnString;
+        std::string CommandString,ReturnString,HelpString;
         std::deque<std::string>* Arguments;
         void* ReturnPtr{nullptr};
         size_t ArgumentIndex;
         static Command_st* BaseCommandReference;
         Command_st* (*ExecutableBody)(Command_st* Caller);
-        Command_st(std::string CommandString,std::deque<Command_st*> SubCommands);
-        Command_st(std::string CommandString,Command_st* (*ExecutableBody)(Command_st* Caller));
-        Command_st(std::string CommandString);
+        Command_st(std::string CommandString,std::deque<Command_st*> SubCommands,std::string HelpString);
+        Command_st(std::string CommandString,Command_st* (*ExecutableBody)(Command_st* Caller),std::string HelpString);
+        Command_st(std::string CommandString,std::string HelpString);
         ~Command_st();
         Command_st* operator()(size_t ArgumentIndex,std::deque<std::string>* Arguments);
         Command_st* AddSubCommand(Command_st* SubCommands);
