@@ -43,8 +43,8 @@ namespace Network{
     }
     void Server_cl::_Bind(){
         while(bind(Socket.FileDescriptor, (struct sockaddr*)&Socket.SocketAddress, Socket.SocketAddressLength) < 0){
-            perror( std::string(std::string("Failed to bind to port ")+std::to_string(Socket.Port)+std::string(", waiting 10.")).c_str());
-            sleep(10);
+            perror( std::string(std::string("Failed to bind to port ")+std::to_string(Socket.Port)).c_str() );
+            sleep(1);
         }
         std::cout << "Bound to port "<<Socket.Port<< std::endl;
     }
