@@ -5,11 +5,13 @@
 #include <Format.hpp>
 #include <Variables.hpp>
 
+
 namespace Filesystem{
     struct File_st{
         std::string Name;
         std::string ContentType;
         std::string Contents;
+        static const std::deque<std::string> CONTENT_TYPES;
     };
     struct Folder_st{
         std::string Name;

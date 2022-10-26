@@ -1,6 +1,5 @@
 #include<Command.hpp>
 
-
 namespace Shell{
     Command_st* Test_Body(Command_st* Caller){
         Caller->ReturnString=std::string("Test_Body, Arguments provided [");
@@ -16,13 +15,26 @@ namespace Shell{
             for(size_t iBase=0;iBase<Caller->BaseCommandReference->SubCommands.size();iBase++){
                 Caller->ReturnString+=Caller->BaseCommandReference->SubCommands[iBase]->CommandString+std::string(" ")+Caller->BaseCommandReference->SubCommands[iBase]->HelpString+std::string((iBase<Caller->BaseCommandReference->SubCommands.size()-1)? "\n" : "");
             }
-        }else if((*Caller->Arguments).size() == 2){
-            for(size_t iBase=0;iBase<Caller->BaseCommandReference->SubCommands.size();iBase++){
-                //Caller->ReturnString+=Caller->BaseCommandReference->SubCommands[iBase]->CommandString+std::string(" ")+Caller->BaseCommandReference->SubCommands[iBase]->HelpString+std::string((iBase<Caller->BaseCommandReference->SubCommands.size()-1)? "\n" : "");
-                if(Caller->BaseCommandReference->SubCommands[iBase]->CommandString == (*Caller->Arguments)[1]){
-                    Caller->ReturnString=Caller->BaseCommandReference->SubCommands[iBase]->HelpString;
+        }else{
+            std::deque<std::string> TokenizedArgument;
+            for(size_t i=(Caller->ArgumentIndex);i<(*Caller->Arguments).size();i++){
+                TokenizedArgument.push_back((*Caller->Arguments)[i]);
+            }
+            Command_st* CurrentCommand=Caller->BaseCommandReference;
+            Command_st* PreviousCommand;
+            for(size_t ia=0;ia<TokenizedArgument.size();ia++){
+                PreviousCommand=CurrentCommand;
+                for(size_t ib=0;ib<CurrentCommand->SubCommands.size();ib++){
+                    if(CurrentCommand->SubCommands[ib]->CommandString == TokenizedArgument[ia]){
+                        CurrentCommand=CurrentCommand->SubCommands[ib];
+                    }
+                }
+                if(CurrentCommand == PreviousCommand){
+                    Caller->ReturnString=std::string("Sub command or argument not found");
+                    return Caller;
                 }
             }
+            Caller->ReturnString=CurrentCommand->HelpString;
         }
         return Caller;
     }

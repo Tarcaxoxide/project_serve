@@ -98,7 +98,7 @@ namespace Brain{
                     std::cout<<"\t"<<ib<<":`"<<RequestHeader.HeaderProperties[ia].Values[ib]<<"`"<<std::endl;
                 }
             }
-            std::cout<<"GET?"<<GetText<<std::endl;
+            std::cout<<"GET? "<<GetText<<std::endl;
         }
 
         Filesystem::File_st* File = Filesystem::FilesystemManager.FileSearch(GetText);
