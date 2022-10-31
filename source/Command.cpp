@@ -121,7 +121,6 @@ namespace Shell{
             Caller->ReturnString=std::string("File Not found");
             Caller->ReturnPtr=(void*)File;
         }else{
-            //Caller->ReturnString=std::string("File found");
             if(Property == "Content"){
                 Caller->ReturnString=File->Contents;
             }
@@ -150,7 +149,6 @@ namespace Shell{
             Caller->ReturnString=std::string("File Not found");
             Caller->ReturnPtr=(void*)File;
         }else{
-            //Caller->ReturnString=std::string("File found");
             if(Property == "Content"){
                 Caller->ReturnString=File->Contents;
                 File->Contents=PropertyValue;
@@ -164,6 +162,28 @@ namespace Shell{
                 Caller->ReturnString="Unknown Property";
             }
         }
+        return Caller;
+    }
+    Command_st* Filesystem_Load_Body(Command_st* Caller){
+        if((*Caller->Arguments).size() < 4){
+            Caller->ReturnString="Invalid amount of arguments: `Filesystem Load [File_Path] [Real_File_Path]`";
+            return Caller;
+        }
+        std::string Path=(*Caller->Arguments)[2];
+        std::string Real_File_Path=(*Caller->Arguments)[3];
+
+        Filesystem::File_st* File = Filesystem::FilesystemManager.FileSearch(Path);
+        if(File == nullptr){Caller->ReturnString=std::string("Virtual file doesn't exist");return Caller;}
+        
+        std::ifstream RealFile(Real_File_Path);
+        if (RealFile.fail()){Caller->ReturnString=std::string("Real file doesn't exist");return Caller;}
+        std::string AllLines="";
+        for(std::string Line="";std::getline(RealFile,Line);){
+            AllLines+=Line+'\n';
+        }
+        File->Contents=AllLines;
+
+        RealFile.close();
         return Caller;
     }
     Command_st* Variable_Set_Body(Command_st* Caller){
@@ -261,6 +281,7 @@ namespace Shell{
         Command_st* Command_Filesystem_Delete=Command_Filesystem->AddSubCommand(new Command_st("Delete",Filesystem_Delete_Body,"(Delete [Path]; Deletes the file or folder depending on the path provided)"));
         Command_st* Command_Filesystem_Get=Command_Filesystem->AddSubCommand(new Command_st("Get",Filesystem_Get_Body,"(Get [File_Path] [Property]; Gets the specified property(Content,Type) of the file)"));
         Command_st* Command_Filesystem_Set=Command_Filesystem->AddSubCommand(new Command_st("Set",Filesystem_Set_Body,"(Set [File_Path] [Property] [Value]; Sets the specified property(Content,Type) of the file)"));
+        Command_st* Command_Filesystem_Load=Command_Filesystem->AddSubCommand(new Command_st("Load",Filesystem_Load_Body,"(Load [File_Path] [Real_File_Path]; loads the contents of a real file into the virtual file"));
 
         Command_st* Command_Variable=BaseCommand.AddSubCommand(new Command_st("Variable","(Variable [SubCommand]; Takes 1 sub command)"));
         Command_st* Command_Variable_Set=Command_Variable->AddSubCommand(new Command_st("Set",Variable_Set_Body,"(Set [Variable_Name] [Value]; Sets a variable to the value provided,the value must be a number(+ or -,64bit))"));

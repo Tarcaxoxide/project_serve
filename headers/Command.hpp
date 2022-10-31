@@ -9,6 +9,7 @@
 #include <Filesystem.hpp>
 #include <Variables.hpp>
 #include <cstdlib>
+#include <fstream>
 
 namespace Shell{
     struct Command_st{
