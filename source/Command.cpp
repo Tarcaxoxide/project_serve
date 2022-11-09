@@ -39,6 +39,10 @@ namespace Shell{
         return Caller;
     }
     Command_st* Filesystem_Create_Body(Command_st* Caller){
+        if((*Caller->Arguments).size() != 3){
+            Caller->ReturnString="Invalid amount of arguments: `Filesystem Create [File_Path]`";
+            return Caller;
+        }
         std::string Path=(*Caller->Arguments)[(Caller->ArgumentIndex)];
         std::deque<std::string> TokenizedPath=Format::split(Path,"/");
         if(TokenizedPath[TokenizedPath.size()-1].size() < 1){
@@ -61,9 +65,12 @@ namespace Shell{
         return Caller;
     }
     Command_st* Filesystem_Find_Body(Command_st* Caller){
+        if((*Caller->Arguments).size() != 3){
+            Caller->ReturnString="Invalid amount of arguments: `Filesystem Find [File_Path]`";
+            return Caller;
+        }
         std::string Path=(*Caller->Arguments)[(Caller->ArgumentIndex)];
         std::deque<std::string> TokenizedPath=Format::split(Path,"/");
-        
         if(TokenizedPath[TokenizedPath.size()-1].size() < 1){
             Filesystem::Folder_st* Folder = Filesystem::FilesystemManager.FolderSearch(Path);
             if(Folder == nullptr){
@@ -84,6 +91,10 @@ namespace Shell{
         return Caller;
     }
     Command_st* Filesystem_Delete_Body(Command_st* Caller){
+        if((*Caller->Arguments).size() != 3){
+            Caller->ReturnString="Invalid amount of arguments: `Filesystem Delete [File_Path]`";
+            return Caller;
+        }
         std::string Path=(*Caller->Arguments)[(Caller->ArgumentIndex)];
         std::deque<std::string> TokenizedPath=Format::split(Path,"/");
         if(TokenizedPath[TokenizedPath.size()-1].size() < 1){
@@ -109,8 +120,8 @@ namespace Shell{
         return Caller;
     }
     Command_st* Filesystem_Get_Body(Command_st* Caller){
-        if((*Caller->Arguments).size() == 3){
-            Caller->ReturnString="Invalid amount of arguments: `Filesystem Get [File_Path] [Property]`";
+        if((*Caller->Arguments).size() != 4){
+            Caller->ReturnString="Invalid amount of arguments: `Filesystem Get [File_Path] [Property(`Content`,`Type`)]`";
             return Caller;
         }
         std::string Path=(*Caller->Arguments)[2];
@@ -135,7 +146,7 @@ namespace Shell{
     }
     Command_st* Filesystem_Set_Body(Command_st* Caller){
         if((*Caller->Arguments).size() < 4){
-            Caller->ReturnString="Invalid amount of arguments: `Filesystem Set [File_Path] [Property] [Value]`";
+            Caller->ReturnString="Invalid amount of arguments: `Filesystem Set [File_Path] [Property(`Content`,`Type`)] [Value]`";
             return Caller;
         }
         std::string Path=(*Caller->Arguments)[2];
@@ -165,7 +176,7 @@ namespace Shell{
         return Caller;
     }
     Command_st* Filesystem_Load_Body(Command_st* Caller){
-        if((*Caller->Arguments).size() < 4){
+        if((*Caller->Arguments).size() != 4){
             Caller->ReturnString="Invalid amount of arguments: `Filesystem Load [File_Path] [Real_File_Path]`";
             return Caller;
         }
@@ -187,7 +198,7 @@ namespace Shell{
         return Caller;
     }
     Command_st* Variable_Set_Body(Command_st* Caller){
-        if((*Caller->Arguments).size() == 3){
+        if((*Caller->Arguments).size() != 4){
             Caller->ReturnString="incorrect amount of arguments. `Variable Set [variable name] [variable value]`";
         }
         std::string VariableName=(*Caller->Arguments)[2];
@@ -206,7 +217,7 @@ namespace Shell{
         return Caller;
     }
     Command_st* Variable_Get_Body(Command_st* Caller){
-        if((*Caller->Arguments).size() == 2){
+        if((*Caller->Arguments).size() != 3){
             Caller->ReturnString="incorrect amount of arguments. `Variable Get [variable name]`";
         }
         std::string VariableName=(*Caller->Arguments)[2];
