@@ -222,7 +222,9 @@ namespace Shell{
         if (RealFile.fail()){Caller->ReturnString=std::string("Real file doesn't exist");return Caller;}
         for(std::string Line="";std::getline(RealFile,Line);){
             std::deque<std::string> args=Format::split(Line," ");
-            bool good=true;Command(args,good);
+            bool good=true;
+            std::string ReturnString=Command(args,good);
+            std::cout<<ReturnString<<std::endl;
         }
         RealFile.close();
         return Caller;
