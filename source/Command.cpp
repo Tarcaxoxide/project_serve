@@ -1,5 +1,12 @@
 #include<Command.hpp>
 
+
+std::string GetSubCommands(Shell::Command_st* Caller){
+    for(size_t i=0;i<Caller->SubCommands.size();i++){
+        Caller->ReturnString+=std::string(((i == 0)?"\t":"\n\t"))+Caller->SubCommands[i]->CommandString;
+    }
+    return Caller->ReturnString;
+}
 namespace Shell{
     Command_st* Test_Body(Command_st* Caller){
         Caller->ReturnString=std::string("Test_Body, Arguments provided [");
@@ -151,9 +158,15 @@ namespace Shell{
         }
         std::string Path=(*Caller->Arguments)[2];
         std::string Property=(*Caller->Arguments)[3];
-        std::string PropertyValue;
+        std::string PropertyValue="";
         for(size_t i=4;i<(*Caller->Arguments).size();i++){
             PropertyValue+=(*Caller->Arguments)[i]+std::string((i<(*Caller->Arguments).size()-1)? " " : "");
+        }
+        if(PropertyValue == ""){
+            for(size_t i=0;i<Filesystem::File_st::CONTENT_TYPES.size();i++){
+                Caller->ReturnString+=std::string(((i == 0)?"\t":"\n\t"))+Filesystem::File_st::CONTENT_TYPES[i];
+            }
+            return Caller;
         }
         Filesystem::File_st* File = Filesystem::FilesystemManager.FileSearch(Path);
         if(File == nullptr){
@@ -197,6 +210,24 @@ namespace Shell{
         RealFile.close();
         return Caller;
     }
+
+    Command_st* Run_Body(Command_st* Caller){
+        if((*Caller->Arguments).size() != 2){
+            Caller->ReturnString="Invalid amount of arguments: `Run [Real_File_Path]`";
+            return Caller;
+        }
+        std::string Real_File_Path=(*Caller->Arguments)[1];
+        
+        std::ifstream RealFile(Real_File_Path);
+        if (RealFile.fail()){Caller->ReturnString=std::string("Real file doesn't exist");return Caller;}
+        for(std::string Line="";std::getline(RealFile,Line);){
+            std::deque<std::string> args=Format::split(Line," ");
+            bool good=true;Command(args,good);
+        }
+        RealFile.close();
+        return Caller;
+    }
+
     Command_st* Variable_Set_Body(Command_st* Caller){
         if((*Caller->Arguments).size() != 4){
             Caller->ReturnString="incorrect amount of arguments. `Variable Set [variable name] [variable value]`";
@@ -218,14 +249,17 @@ namespace Shell{
     }
     Command_st* Variable_Get_Body(Command_st* Caller){
         if((*Caller->Arguments).size() != 3){
-            Caller->ReturnString="incorrect amount of arguments. `Variable Get [variable name]`";
+            for(size_t i=0;i<Variables::VariableManager.TheseVariables.size();i++){
+                Caller->ReturnString+=std::string(((i == 0)?"\t":"\n\t"))+Variables::VariableManager.TheseVariables[i].Name;
+            }
+            return Caller;
         }
         std::string VariableName=(*Caller->Arguments)[2];
         int64_t iVariableValue;
 
         int64_t index=Variables::VariableManager.GetVariable(VariableName,iVariableValue);
         if(index == 0){
-            Caller->ReturnString=std::string("Variable doesn't exist, please Set it");
+            Caller->ReturnString=std::string("Variable doesn't exist, please Set it.");
         }else{
             Caller->ReturnString=std::to_string(iVariableValue);
         }
@@ -281,11 +315,12 @@ namespace Shell{
     }
     Command_st BaseCommand("BaseCommand","(?this shouldn't ever be activated?)");
 };
-
 namespace Shell{
     void Initialize(){
         Command_st* Command_Test=BaseCommand.AddSubCommand(new Command_st("Test",Test_Body,"(Test; just a test,takes no arguments)"));
         Command_st* Command_Help=BaseCommand.AddSubCommand(new Command_st("Help",Help_Body,"(Help [SubCommand]; takes 1 optional sub command that is the command to get help for)"));
+        Command_st* command_Run=BaseCommand.AddSubCommand(new Command_st("Run",Run_Body,"(Run [Real_File_Path]; runs file provided, like a shell script.)"));
+        
         Command_st* Command_Filesystem=BaseCommand.AddSubCommand(new Command_st("Filesystem","(Filesystem [SubCommand]; Virtual filesystem in ram only, takes 1 sub command)"));
         Command_st* Command_Filesystem_Create=Command_Filesystem->AddSubCommand(new Command_st("Create",Filesystem_Create_Body,"(Create [Path]; creates files and folders depending on the path provided)"));
         Command_st* Command_Filesystem_Find=Command_Filesystem->AddSubCommand(new Command_st("Find",Filesystem_Find_Body,"(Find [Path]; Finds the file or folder depending on the path provided)"));
@@ -297,6 +332,7 @@ namespace Shell{
         Command_st* Command_Variable=BaseCommand.AddSubCommand(new Command_st("Variable","(Variable [SubCommand]; Takes 1 sub command)"));
         Command_st* Command_Variable_Set=Command_Variable->AddSubCommand(new Command_st("Set",Variable_Set_Body,"(Set [Variable_Name] [Value]; Sets a variable to the value provided,the value must be a number(+ or -,64bit))"));
         Command_st* Command_Variable_Get=Command_Variable->AddSubCommand(new Command_st("Get",Variable_Get_Body,"(Get [Variable_Name]; Gets the variable value and displays it)"));
+        
     }
     std::string Command(std::deque<std::string> args,bool& KeepGoing){
         Command_st* PreviousCommand=(Command_st*)nullptr;
@@ -308,6 +344,6 @@ namespace Shell{
             }
             PreviousCommand=CurrentCommand;
         }
-        return ((CurrentCommand == nullptr) ? ((PreviousCommand == nullptr)? "Unknown command." : "Unknown subcommand.") : CurrentCommand->ReturnString);
+        return ((CurrentCommand == nullptr) ? ((PreviousCommand == nullptr)? "Unknown command." : GetSubCommands(PreviousCommand)) : CurrentCommand->ReturnString);
     }
 };

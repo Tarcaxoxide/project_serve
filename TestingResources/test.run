@@ -1,0 +1,3 @@
+Filesystem Create test.html
+Filesystem Load test.html TestingResources/test.html
+Filesystem Set test.html Type text/html
