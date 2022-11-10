@@ -1,6 +1,0 @@
-Filesystem Create test.html
-Filesystem Load test.html TestingResources/test.html
-Filesystem Set test.html Type text/html
-Filesystem Create Frame.html
-Filesystem Set Frame.html Type text/html
-Filesystem Set Frame.html Content <b>Hello World</b>

@@ -1,0 +1,3 @@
+Filesystem Create Accounts/test
+Filesystem Set Accounts/test Type application/json
+Filesystem Load Accounts/test Accounts/test.json

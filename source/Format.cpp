@@ -24,6 +24,23 @@ namespace Format{
             ((ObjectDefinitions::Note_st*)New_CreateNote_Activity->object)->content=message;
             return New_CreateNote_Activity;
         }
+        std::string Note_ToString(ObjectDefinitions::Note_st* cNote){
+                std::string Result="{";
+                Result+=std::string("\"@context\": \"")+cNote->context+std::string("\",\n");
+                Result+=std::string("\"type\": \"")+cNote->type+std::string("\",\n");
+                Result+=std::string("\"id\": \"")+cNote->id+std::string("\",\n");
+                std::string SendToString=std::string("\"to\": [");
+                for(size_t i=0;i<cNote->to.size();i++){
+                    SendToString+=std::string("\"")+cNote->to[i]+std::string("\"");
+                    if(i<cNote->to.size()-1)SendToString+=std::string(",");
+                }
+                SendToString+=std::string("],\n");
+                Result+=SendToString;
+                Result+=std::string("\"attributedTo\": \"")+cNote->attributedTo+std::string("\",\n");
+                Result+=std::string("\"content\": \"")+cNote->content+std::string("\"\n");
+                Result+="}";
+                return Result;
+        }
         std::string Activity_ToString(ObjectDefinitions::Activity_st* Activity){
             std::string Result="{";
 
@@ -38,22 +55,38 @@ namespace Format{
             SendToString+=std::string("],\n");
             Result+=SendToString;
             Result+=std::string("\"actor\": \"")+Activity->actor+std::string("\",\n");
-            Result+=std::string("\"object\": {");
+            Result+=std::string("\"object\": ");
             if(Activity->type == "Create"){
-                ObjectDefinitions::Object_st* cObject=Activity->object;
-                Result+=std::string("\"@context\": \"")+cObject->context+std::string("\",\n");
-                Result+=std::string("\"type\": \"")+cObject->type+std::string("\",\n");
-                Result+=std::string("\"id\": \"")+cObject->id+std::string("\",\n");
-                Result+=SendToString;
-
-                if(cObject->type == "Note"){
-                    ObjectDefinitions::Note_st* cNote=(ObjectDefinitions::Note_st*)cObject;
-                    Result+=std::string("\"attributedTo\": \"")+cNote->attributedTo+std::string("\",\n");
-                    Result+=std::string("\"content\": \"")+cNote->content+std::string("\"\n");
+                if(Activity->object->type == "Note"){
+                    ObjectDefinitions::Note_st* cNote=(ObjectDefinitions::Note_st*)Activity->object;
+                    Result+=Note_ToString(cNote);
                 }
             }
-            Result+=std::string("}\n");
+            Result+=std::string("\n");
             Result+="}";
+            return Result;
+        }
+        std::string GenerateProfile(std::string site,std::string username){
+            //  {
+            std::string Result=std::string("{");
+            //  	"subject": "acct:alice@my-example.com",
+            Result+=std::string("\"subject\": \"acct:")+username+std::string("@")+site+std::string("\",");
+            //  	"links": [
+            Result+=std::string("\"links\": [");
+            //  		{
+            Result+=std::string("{");
+            //  			"rel": "self",
+            Result+=std::string("\"rel\": \"self\",");
+            //  			"type": "application/activity+json",
+            Result+=std::string("\"type\": \"application/activity+json\",");
+            //  			"href": "https://my-example.com/actor"
+            Result+=std::string("\"href\": \"https://")+site+std::string("/Accounts/")+username+std::string("\"");
+            //  		}
+            Result+=std::string("}");
+            //  	]
+            Result+=std::string("]");
+            //  }
+            Result+=std::string("}");
             return Result;
         }
     };
@@ -111,24 +144,25 @@ namespace Format{
         }
         return Result;
     }
-    void AddHeader(std::string& Message,std::string type,bool good){
+    void AddHeader(std::string& Message,std::string type,HeaderCodes code){
         size_t messageSize=Message.size();
         std::string Header;
-        if(good){
-            Header+="HTTP/1.0 200 OK\r\n";
-            Header+="Content-type: "+type+"\r\n";
-            Header+="Content-Length: "+std::to_string(messageSize)+"\r\n";
-            Header+="Connection: close";
-            Header+="\r\n\r\n";
-            Message=Header+Message;
+        std::string loc=Message;
+        
+        Header+="HTTP/1.0 ";
+        Header+=std::to_string(code)+std::string(" ");
+        if(code == HeaderCodes::NOT_FOUND)Header+=std::string("file not found");
+        if(code == HeaderCodes::OK)Header+=std::string("ok");
+        if(code == HeaderCodes::FOUND)Header+=std::string("location:")+loc;
+        if(code == HeaderCodes::REDIRECT)Header+=std::string("location: ")+loc;
+        Header+=std::string("\r\n");
+        Header+=std::string("Content-type: ")+type+std::string("\r\n");
+        Header+=std::string("Content-Length: ")+std::to_string(messageSize)+std::string("\r\n");
+        Header+=std::string("Connection: close");
+        Header+=std::string("\r\n\r\n");
+        if(code == HeaderCodes::FOUND || code == HeaderCodes::REDIRECT){
+            Message=std::string("Redirecting to ")+loc;
         }else{
-            Message="404 file not found";
-            size_t messageSize=Message.size();
-            Header+="HTTP/1.0 404 File not found\r\n";
-            Header+="Content-type: "+type+"\r\n";
-            Header+="Content-Length: "+std::to_string(messageSize)+"\r\n";
-            Header+="Connection: close";
-            Header+="\r\n\r\n";
             Message=Header+Message;
         }
     }

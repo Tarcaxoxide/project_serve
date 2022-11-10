@@ -16,15 +16,6 @@ namespace Format{
                 std::string id;
                 std::string name;
             };
-            struct Actor_st : public Object_st{
-                std::string preferredUsername;
-                std::string summary;
-                std::string inbox;
-                std::string outbox;
-                std::string followers;
-                std::string following;
-                std::string liked;
-            };
             struct Note_st : public Object_st{
                 std::deque<std::string> to;
                 std::string attributedTo;
@@ -38,6 +29,8 @@ namespace Format{
         };
         ObjectDefinitions::Activity_st* Create_CreateNote_Activity(std::string site,std::string actor,std::string ActivityID,std::string NoteID,std::string message,std::deque<std::string> SendTo);
         std::string Activity_ToString(ObjectDefinitions::Activity_st* Activity);
+        std::string Note_ToString(ObjectDefinitions::Note_st* cNote);
+        std::string GenerateProfile(std::string site,std::string username);
     };
     struct RequestHeaderProperty_st{
         std::string Name;
@@ -49,7 +42,13 @@ namespace Format{
         std::deque<std::string> Property(std::string Name);
         std::string AllProperties();
     };
-    void AddHeader(std::string& Message,std::string type,bool good);
+    enum HeaderCodes{
+        OK=200,
+        REDIRECT=301,
+        FOUND=302,
+        NOT_FOUND=404
+    };
+    void AddHeader(std::string& Message,std::string type,HeaderCodes code);
     std::deque<std::string> split(std::string str, std::string token);
     std::string urlEncode(std::string str,bool EncodeSpaces=false);
     std::string urlDecode(std::string str);

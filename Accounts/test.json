@@ -1,0 +1,11 @@
+{
+	"@context": ["https://www.w3.org/ns/activitystreams",{"@language": "en"}],
+
+    "subject":"acct:test@dragoncrawler.loganjohndarylgraham.xyz",
+	"id": "https://dragoncrawler.loganjohndarylgraham.xyz/Accounts/test",
+	"type": "Person",
+	"preferredUsername": "test",
+	"inbox": "https://dragoncrawler.loganjohndarylgraham.xyz/Accounts/test/inbox",
+    "outbox": "https://dragoncrawler.loganjohndarylgraham.xyz/Accounts/test/outbox",
+    "links":[{"rel":"self","type":"application/activity+json","href":"https://dragoncrawler.loganjohndarylgraham.xyz/Accounts/test"}]
+}

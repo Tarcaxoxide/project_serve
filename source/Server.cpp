@@ -33,7 +33,7 @@ namespace Network{
         Socket.FileDescriptor=socket(Socket.Domain, Socket.Type, Socket.Protocol);
         if (Socket.FileDescriptor == -1) {
           perror( std::string("Failed to create socket.").c_str());
-          exit(EXIT_FAILURE);
+          //exit(EXIT_FAILURE);
         }
         std::cout << "Created socket." << std::endl;
         Socket.SocketAddress.sin_family = Socket.Domain;
@@ -51,7 +51,7 @@ namespace Network{
     void Server_cl::_Listen(){
         if (listen(Socket.FileDescriptor, Socket.Backlog) < 0) {
           perror( std::string("Failed to listen on socket.").c_str());
-          exit(EXIT_FAILURE);
+          //exit(EXIT_FAILURE);
         }
         std::cout << "Listen on socket." << std::endl;
     }
@@ -60,11 +60,20 @@ namespace Network{
 
         Client=new Socket_st;
 
+        Client->Port = ntohs(Client->SocketAddress.sin_port);
+        Client->SocketAddress.sin_addr.s_addr = Socket.SocketAddress.sin_addr.s_addr;
+        Client->SocketAddress.sin_family = Socket.SocketAddress.sin_family;
+        Client->SocketAddressLength = sizeof(Client->SocketAddress);
+
         Client->FileDescriptor = accept(Socket.FileDescriptor, (struct sockaddr*)&Client->SocketAddress, (socklen_t*)&Client->SocketAddressLength);
         if (Client->FileDescriptor < 0) {
           std::cout << "Failed to grab connection. errno: " << errno << std::endl;
-          perror( std::string("Failed to grab connection.").c_str());
-          exit(EXIT_FAILURE);
+          std::string ErrorMessage="Failed to grab connection.\n";
+          ErrorMessage+=std::string("Socket.FileDescriptor = ")+std::to_string(Socket.FileDescriptor)+std::string("\n");
+          ErrorMessage+=std::string("sizeof(Client->SocketAddress) = ")+std::to_string(sizeof(Client->SocketAddress))+std::string("\n");
+          ErrorMessage+=std::string("Client->SocketAddressLength = ")+std::to_string(Client->SocketAddressLength)+std::string("\n");
+          perror(ErrorMessage.c_str());
+          //exit(EXIT_FAILURE);
         }
 
         Client->Port = ntohs(Client->SocketAddress.sin_port);
