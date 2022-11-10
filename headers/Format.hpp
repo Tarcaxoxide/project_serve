@@ -11,7 +11,6 @@ namespace Format{
     namespace Activitypub{
         namespace ObjectDefinitions{
             struct Object_st{
-                
                 std::string context;
                 std::string type;
                 std::string id;
