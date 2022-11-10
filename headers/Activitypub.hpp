@@ -17,6 +17,7 @@ namespace Network{
                 //   "name": "A Simple, non-specific object"
                 std::string name;
                 // }
+                virtual ~Object_st(){}
             };
             struct Actor_st : public Object_st{
                 // {
