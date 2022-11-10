@@ -7,9 +7,6 @@
 #include <string.h>
 #include <Filesystem.hpp>
 #include <Variables.hpp>
-#include <map>
-#include <boost/algorithm/string.hpp>
-#include <Activitypub.hpp>
 
 
 
@@ -29,16 +26,7 @@
 
 
 namespace Brain{
-    struct RequestHeaderProperty_st{
-        std::string Name;
-        std::deque<std::string> Values;
-    };
-
-    struct RequestHeader_st{
-        std::deque<RequestHeaderProperty_st> HeaderProperties;
-        RequestHeader_st(std::string RequestString);
-        std::deque<std::string> Property(std::string Name);
-    };
+    
 
     void Initialize();
     std::string Think(std::string Input,Network::Socket_st* Client,Network::Server_cl& Server);
