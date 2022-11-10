@@ -80,8 +80,8 @@ namespace Brain{
             std::cout<<"?TEST?"<<std::endl;
             Network::Activitypub::ObjectDefinitions::Activity_st* nActivty = Network::Activitypub::Create_CreateNote_Activity("dragoncrawler.loganjohndarylgraham.xyz","main","1","2","test",{"nobody"});
             std::cout<<Network::Activitypub::Activity_ToString(nActivty)<<std::endl;
-            delete[] nActivty->object;
-            delete[] nActivty;
+            delete nActivty->object;
+            delete nActivty;
             std::cout<<"?TEST?"<<std::endl;
         //Test
 
