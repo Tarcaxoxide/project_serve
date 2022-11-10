@@ -1,39 +1,5 @@
 #include<Brain.hpp>
 
-
-// KEY: `Accept`, VALUE: {`text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8`}
-// KEY: `Accept-Encoding`, VALUE: {`gzip,`,`deflate,`,`br`}
-// KEY: `Accept-Language`, VALUE: {`en-US,en;q=0.5`}
-// KEY: `Connection`, VALUE: {`keep-alive`}
-// KEY: `Cookie`, VALUE: {`__Host-pleroma_key=SFMyNTY.g3QAAAABbQAAAAtvYXV0aF90b2tlbm0AAAArY1NuTHh1OWhhS2tsNWhkQTdrb0NPZlBPVTFtVGR3YzAxLV96WkhsU1JXUQ.KnaUN18o8rMfukn0Cy0riHzBboIe6H0lPyjNtUhlFpQ`}
-// KEY: `GET`, VALUE: {`/test.html`,`HTTP/1.1`}
-// KEY: `Host`, VALUE: {`localhost:8083`}
-// KEY: `Sec-Fetch-Dest`, VALUE: {`document`}
-// KEY: `Sec-Fetch-Mode`, VALUE: {`navigate`}
-// KEY: `Sec-Fetch-Site`, VALUE: {`none`}
-// KEY: `Sec-Fetch-User`, VALUE: {`?1`}
-// KEY: `Upgrade-Insecure-Requests`, VALUE: {`1`}
-// KEY: `User-Agent`, VALUE: {`Mozilla/5.0`,`(X11;`,`Linux`,`x86_64;`,`rv:104.0)`,`Gecko/20100101`,`Firefox/104.0`}
-
-
-// KEY: `Accept`, VALUE: {`text/html,`,`application/xhtml+xml,`,`application/xml;q=0.9,`,`image/avif,`,`image/webp,`,`*/*;q=0.8`}
-// KEY: `Accept-Encoding`, VALUE: {`gzip,`,``,`deflate,`,``,`br`}
-// KEY: `Accept-Language`, VALUE: {`en-US,`,`en;q=0.5`}
-// KEY: `Connection`, VALUE: {`keep-alive`}
-// KEY: `Cookie`, VALUE: {`__Host-pleroma_key=SFMyNTY.g3QAAAABbQAAAAtvYXV0aF90b2tlbm0AAAArY1NuTHh1OWhhS2tsNWhkQTdrb0NPZlBPVTFtVGR3YzAxLV96WkhsU1JXUQ.KnaUN18o8rMfukn0Cy0riHzBboIe6H0lPyjNtUhlFpQ`}
-// KEY: `GET`, VALUE: {`/test.html`,`HTTP/1.1`}
-// KEY: `Host`, VALUE: {`localhost:8083`}
-// KEY: `Sec-Fetch-Dest`, VALUE: {`document`}
-// KEY: `Sec-Fetch-Mode`, VALUE: {`navigate`}
-// KEY: `Sec-Fetch-Site`, VALUE: {`none`}
-// KEY: `Sec-Fetch-User`, VALUE: {`?1`}
-// KEY: `Upgrade-Insecure-Requests`, VALUE: {`1`}
-// KEY: `User-Agent`, VALUE: {`Mozilla/5.0`,`(X11;`,`Linux`,`x86_64;`,`rv:104.0)`,`Gecko/20100101`,`Firefox/104.0`}
-
-
-
-
-
 namespace Brain{
     RequestHeader_st::RequestHeader_st(std::string RequestString){
         boost::replace_all(RequestString, "GET ", "GET:");
@@ -95,10 +61,10 @@ namespace Brain{
             for(size_t ia=0;ia<RequestHeader.HeaderProperties.size();ia++){
                 std::cout<<ia<<":`"<<RequestHeader.HeaderProperties[ia].Name<<"`"<<std::endl;
                 for(size_t ib=0;ib<RequestHeader.HeaderProperties[ia].Values.size();ib++){
-                    std::cout<<"\t"<<ib<<":`"<<RequestHeader.HeaderProperties[ia].Values[ib]<<"`"<<std::endl;
+                    std::cout<<"\t"<<ib<<":`"<<Format::urlDecode(RequestHeader.HeaderProperties[ia].Values[ib])<<"`"<<std::endl;
                 }
             }
-            std::cout<<"GET? "<<GetText<<std::endl;
+            std::cout<<"GET? "<<Format::urlDecode(GetText)<<std::endl;
         }
 
         Filesystem::File_st* File = Filesystem::FilesystemManager.FileSearch(GetText);
@@ -109,6 +75,16 @@ namespace Brain{
             Ret=File->Contents;
             Format::AddHeader(Ret,File->ContentType,true);
         }
+
+        //Test
+            std::cout<<"?TEST?"<<std::endl;
+            Network::Activitypub::ObjectDefinitions::Activity_st* nActivty = Network::Activitypub::Create_CreateNote_Activity("dragoncrawler.loganjohndarylgraham.xyz","main","1","2","test",{"nobody"});
+            std::cout<<Network::Activitypub::Activity_ToString(nActivty)<<std::endl;
+            delete[] nActivty->object;
+            delete[] nActivty;
+            std::cout<<"?TEST?"<<std::endl;
+        //Test
+
         return Ret;
     }
 };

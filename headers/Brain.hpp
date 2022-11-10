@@ -9,6 +9,7 @@
 #include <Variables.hpp>
 #include <map>
 #include <boost/algorithm/string.hpp>
+#include <Activitypub.hpp>
 
 
 
