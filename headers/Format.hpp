@@ -2,36 +2,12 @@
 
 #include <deque>
 #include <string>
-#include <jsoncpp/json/json.h>
+//#include <jsoncpp/json/json.h>
 #include <Variables.hpp>
 #include <map>
 #include <boost/algorithm/string.hpp>
 
 namespace Format{
-    namespace Activitypub{
-        namespace ObjectDefinitions{
-            struct Object_st{
-                std::string context;
-                std::string type;
-                std::string id;
-                std::string name;
-            };
-            struct Note_st : public Object_st{
-                std::deque<std::string> to;
-                std::string attributedTo;
-                std::string content;
-            };
-            struct Activity_st : public Object_st{
-                std::deque<std::string> to;
-                std::string actor;
-                Object_st* object;
-            };
-        };
-        ObjectDefinitions::Activity_st* Create_CreateNote_Activity(std::string site,std::string actor,std::string ActivityID,std::string NoteID,std::string message,std::deque<std::string> SendTo);
-        std::string Activity_ToString(ObjectDefinitions::Activity_st* Activity);
-        std::string Note_ToString(ObjectDefinitions::Note_st* cNote);
-        std::string GenerateProfile(std::string site,std::string username);
-    };
     struct RequestHeaderProperty_st{
         std::string Name;
         std::deque<std::string> Values;

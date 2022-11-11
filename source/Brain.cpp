@@ -32,51 +32,27 @@ namespace Brain{
                 }break;
             }
         }
-
-        if(Get_UserName == ""){// /users/
-            for(size_t i=7;i<GetText.size();i++){
+        if(GetText == "/favicon.ico"){
+            Ret="404 file not found.";
+            Format::AddHeader(Ret,"text/html",Format::HeaderCodes::NOT_FOUND);
+            return Ret;
+        }
+        if(Get_UserName == ""){// /actor/
+            for(size_t i=8;i<GetText.size();i++){
                 Get_UserName+=GetText[i];
             }
         }
+        if(Get_Site == ""){
+            Get_Site=RequestHeader.Property("Host")[0];
+        }
         
-        
-        std::string Accounta=std::string("/Accounts/")+Get_UserName;
-
-        Filesystem::File_st* File = Filesystem::FilesystemManager.FileSearch(Accounta);
-        if(File != nullptr){
-            Ret=File->Contents;
-            Format::AddHeader(Ret,File->ContentType,Format::HeaderCodes::OK);
-        }else if(GetText == std::string("/.well-known/webfinger?resource=acct:")+Get_UserName+std::string("@")+Get_Site){
-            Ret=Format::Activitypub::GenerateProfile(Get_Site,Get_UserName);
+        if(GetText == std::string("/Person/")+Get_UserName || GetText == std::string("/.well-known/webfinger?resource=acct:")+Get_UserName+std::string("@")+Get_Site){
+            Format::Activitypub::ObjectDefinitions::Actor_st TestPerson(Get_Site,Get_UserName,"Person");
+            Ret=TestPerson.Actor_Json();
             Format::AddHeader(Ret,"application/json",Format::HeaderCodes::OK);
         }
-        else{
-            Ret="404 file not found.";
-            Format::AddHeader(Ret,"text/html",Format::HeaderCodes::NOT_FOUND);
-        }
-
+        std::cout<<"GetText:{\n"<<GetText<<"\n"<<Get_Site<<"\n"<<Get_UserName<<"\n}"<<std::endl;
         std::cout<<"Return:{\n"<<Ret<<"\n}"<<std::endl;
         return Ret;
     }
 };
-
-
-/*
-{
-	"@context": [
-		"https://www.w3.org/ns/activitystreams",
-		"https://w3id.org/security/v1"
-	],
-
-	"id": "https://my-example.com/actor",
-	"type": "Person",
-	"preferredUsername": "alice",
-	"inbox": "https://my-example.com/inbox",
-
-	"publicKey": {
-		"id": "https://my-example.com/actor#main-key",
-		"owner": "https://my-example.com/actor",
-		"publicKeyPem": "-----BEGIN PUBLIC KEY-----...-----END PUBLIC KEY-----"
-	}
-}
-*/

@@ -3,6 +3,11 @@
 	"id": "https://dragoncrawler.loganjohndarylgraham.xyz/Accounts/test",
 	"type": "Person",
 	"preferredUsername": "test",
+	"name": "test",
 	"inbox": "https://dragoncrawler.loganjohndarylgraham.xyz/Accounts/test/inbox",
     "outbox": "https://dragoncrawler.loganjohndarylgraham.xyz/Accounts/test/outbox"
 }
+
+
+
+

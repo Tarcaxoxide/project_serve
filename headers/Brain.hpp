@@ -1,7 +1,9 @@
 #pragma once
 
 #include <Server.hpp>
+
 #include <Format.hpp>
+#include <Activitypub.hpp>
 #include <iostream>
 #include <string>
 #include <string.h>
