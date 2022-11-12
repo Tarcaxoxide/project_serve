@@ -2,7 +2,6 @@
 namespace Format{
     namespace Activitypub{
         namespace ObjectDefinitions{
-            size_t Object_st::idNumber{1};
             Object_st::Object_st(std::string site,std::string name,Identifier_st Identifier){
                 langauge=std::string("en");
                 type=std::string("Object");

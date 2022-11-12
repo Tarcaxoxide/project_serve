@@ -40,7 +40,6 @@ namespace Format{
             struct Object_st{
                 std::string langauge;
                 std::string type;
-                static size_t idNumber;
                 std::string name;
                 std::string site;
                 Identifier_st Identifier;

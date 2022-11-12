@@ -5,6 +5,28 @@
 namespace Shell{
     Command_st* COMMAND_Activitypub_Create(Command_st* Caller){
         //Activitypub_Create [Identifier type]
+        std::string Local_Profile_Location="",UserName=(*Caller->Arguments)[2];
+        std::ifstream MainRecord;
+        MainRecord.open("Article/MainRecord");
+        if(MainRecord.is_open()){
+            std::string line;
+            size_t iline=0;
+            bool usernameFound=false;
+            while(getline(MainRecord, line)) {
+                std::cout<<iline<<":"<<((iline%2)? "location" : "username")<<":"<<line<<std::endl;
+
+                if(usernameFound){
+                    Local_Profile_Location=line;
+                }
+                usernameFound=(!(iline%2) && line == UserName);
+                iline++;
+            }
+            MainRecord.close();
+        }
+        if(Local_Profile_Location != ""){
+            Caller->ReturnString=std::string("Already exists.");
+            return Caller;
+        }
         size_t iIT=0;
         for(size_t i=0;i<Format::Activitypub::ObjectDefinitions::Identifier_Type::IT_SIZE;i++){
             if((*Caller->Arguments)[1] == Format::Activitypub::ObjectDefinitions::Identifier_TypeString[i])iIT=i;
@@ -12,10 +34,12 @@ namespace Shell{
         Format::Activitypub::ObjectDefinitions::Identifier_Type IT=(Format::Activitypub::ObjectDefinitions::Identifier_Type)iIT;
         switch(IT){
             case Format::Activitypub::ObjectDefinitions::Identifier_Type::IT_PERSON:{
-                Format::Activitypub::ObjectDefinitions::Actor_st Actor(Settings::URL,(*Caller->Arguments)[2],{Format::Activitypub::ObjectDefinitions::Identifier_Type::IT_PERSON,Format::Activitypub::ObjectDefinitions::Object_st::idNumber});
                 std::string DirToMake=std::string("Article");mkdir(DirToMake.c_str(),0777);
                 DirToMake+=std::string("/")+Format::NumberToHex(IT);mkdir(DirToMake.c_str(),0777);
-                DirToMake+=std::string("/")+Format::NumberToHex(Format::Activitypub::ObjectDefinitions::Object_st::idNumber);mkdir(DirToMake.c_str(),0777);
+                std::deque<std::string> d = Format::listDirectories(DirToMake);
+                Format::Activitypub::ObjectDefinitions::Actor_st Actor(Settings::URL,UserName,{Format::Activitypub::ObjectDefinitions::Identifier_Type::IT_PERSON,d.size()+1});
+                
+                DirToMake+=std::string("/")+Format::NumberToHex(d.size()+1);mkdir(DirToMake.c_str(),0777);
                 mkdir(std::string(DirToMake+std::string("/inbox")).c_str(),0777);
                 
                 mkdir(std::string(DirToMake+std::string("/outbox")).c_str(),0777);
@@ -23,12 +47,20 @@ namespace Shell{
                 Profile<<Actor.Actor_Json()<<std::endl;
                 Profile.close();
                 //write file `Article/Person/(Format::Activitypub::ObjectDefinitions::Identifier_Type::Object_st::idNumber)/Profile.json`
-                Format::Activitypub::ObjectDefinitions::Object_st::idNumber++;
-                std::ofstream MainRecord(std::string(std::string("Article/MainRecord")).c_str());
-                MainRecord<<(*Caller->Arguments)[2]<<std::endl;
+                std::ofstream MainRecord(std::string(std::string("Article/MainRecord")).c_str(), std::ios::out | std::ios::app);
+                MainRecord<<UserName<<std::endl;
                 MainRecord<<DirToMake<<std::endl;
                 MainRecord.close();
                 Caller->ReturnString=Actor.Actor_Json();
+            }break;
+            case Format::Activitypub::ObjectDefinitions::Identifier_Type::IT_NOTE:{
+                std::string DirToMake=std::string("Article");mkdir(DirToMake.c_str(),0777);
+                DirToMake+=std::string("/")+Format::NumberToHex(IT);mkdir(DirToMake.c_str(),0777);
+                std::deque<std::string> d = Format::listDirectories(DirToMake);
+                // Note_st(std::string site,std::string name,std::string content,std::string published,std::string attributedTo,std::string to,Identifier_st Identifier);
+                std::string to=(*Caller->Arguments)[3];
+                std::string content=(*Caller->Arguments)[4];
+                Format::Activitypub::ObjectDefinitions::Note_st Note(Settings::URL,"?name?",content,Format::currentDateAndTime(),UserName,to,{Format::Activitypub::ObjectDefinitions::Identifier_Type::IT_NOTE,d.size()+1});
             }break;
             default:{
                 Caller->ReturnString=std::string("nothing created.");

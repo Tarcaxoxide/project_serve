@@ -156,11 +156,21 @@ namespace Format{
         return Result;
     }
 
+    std::deque<std::string> listDirectories(std::string path){
+        std::deque<std::string> Result;
+        DIR *dir = opendir(path.c_str());
+        struct dirent *entry = readdir(dir);
+        while (entry != NULL)
+        {
+            if (entry->d_type == DT_DIR && entry->d_name[0] != '.'){
+                Result.push_back(std::string(entry->d_name));
+            }
 
-    /*
-    unsigned int x;   
-    std::stringstream ss;
-    ss << std::hex << "fffefffe";
-    ss >> x;
-    */
+
+            entry = readdir(dir);
+        }
+        closedir(dir);
+        return Result;
+    }
+    
 };

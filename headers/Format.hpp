@@ -9,6 +9,8 @@
 #include <ctime>
 #include <iomanip>
 #include <iostream>
+#include <dirent.h>
+#include <stdio.h>
 
 namespace Format{
     struct RequestHeaderProperty_st{
@@ -34,4 +36,5 @@ namespace Format{
     std::string currentDateAndTime();
     std::string NumberToHex(size_t number);
     size_t HexToNumber(std::string hex);
+    std::deque<std::string> listDirectories(std::string path);
 };
