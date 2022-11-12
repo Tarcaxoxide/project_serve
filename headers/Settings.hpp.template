@@ -1,0 +1,7 @@
+#pragma once
+#include<string>
+
+namespace Settings{
+    static const std::string URL="www.example.com";
+    static const uint PORT=8083; 
+};

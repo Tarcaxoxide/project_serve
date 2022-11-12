@@ -6,10 +6,13 @@
 #include <Server.hpp>
 #include <Format.hpp>
 #include <Brain.hpp>
-#include <Filesystem.hpp>
 #include <Variables.hpp>
 #include <cstdlib>
 #include <fstream>
+#include <Activitypub.hpp>
+#include <fcntl.h>           /* Definition of AT_* constants */
+#include <sys/stat.h>
+#include <Settings.hpp>
 
 namespace Shell{
     struct Command_st{

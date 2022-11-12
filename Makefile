@@ -50,5 +50,5 @@ push: clean compile
 	git push "https://loganer%40vivaldi.net:$(shell cat ../git_token.txt)@github.com/Tarcaxoxide/project_serve.git"
 
 run: clean compile
-	./$(BUILDDIR)/$(OSNAME)
+	./$(BUILDDIR)/$(OSNAME) ${URL}
 	

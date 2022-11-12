@@ -1,11 +1,11 @@
-#include<iostream>
-#include<string>
-#include<deque>
-
-#include<Server.hpp>
-#include<Format.hpp>
-#include<Brain.hpp>
-#include<Command.hpp>
+#include <iostream>
+#include <string>
+#include <deque>
+#include <Server.hpp>
+#include <Format.hpp>
+#include <Brain.hpp>
+#include <Command.hpp>
+#include <Settings.hpp>
 
 static bool Running{true};
 
@@ -32,7 +32,7 @@ void RunServer(int PortNumber){
 int main(){
     Brain::Initialize();
     Shell::Initialize();
-    std::thread ServerThread(RunServer,8083);
+    std::thread ServerThread(RunServer,Settings::PORT);
     std::string UserInput;
 
     while(Running){

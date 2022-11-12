@@ -12,6 +12,8 @@
 
 
 namespace Network{
+  extern std::string URL;
+  
   struct Socket_st{
         int FileDescriptor;
         sockaddr_in SocketAddress;

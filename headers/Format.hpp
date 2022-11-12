@@ -2,10 +2,13 @@
 
 #include <deque>
 #include <string>
-//#include <jsoncpp/json/json.h>
 #include <Variables.hpp>
 #include <map>
 #include <boost/algorithm/string.hpp>
+#include <chrono>
+#include <ctime>
+#include <iomanip>
+#include <iostream>
 
 namespace Format{
     struct RequestHeaderProperty_st{
@@ -28,4 +31,7 @@ namespace Format{
     std::deque<std::string> split(std::string str, std::string token);
     std::string urlEncode(std::string str,bool EncodeSpaces=false);
     std::string urlDecode(std::string str);
+    std::string currentDateAndTime();
+    std::string NumberToHex(size_t number);
+    size_t HexToNumber(std::string hex);
 };

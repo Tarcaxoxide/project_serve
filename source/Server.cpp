@@ -1,6 +1,7 @@
 #include<Server.hpp>
 
 namespace Network{
+    std::string URL;
     void Socket_st::Buffer_st::Erase(){
         delete[] ContentsOfBuffer;
         ContentsOfBuffer=nullptr;

@@ -2,7 +2,6 @@
 
 
 namespace Format{
-    
     RequestHeader_st::RequestHeader_st(std::string RequestString){
         boost::replace_all(RequestString, "GET ", "GET:");
         boost::replace_all(RequestString, "POST ", "POST:");
@@ -136,4 +135,32 @@ namespace Format{
         }
         return ret;
     }
+    std::string currentDateAndTime(){
+        std::time_t end_time = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+        
+        std::string Result=std::ctime(&end_time);
+        Result.erase(std::remove(Result.begin(), Result.end(), '\n'), Result.end());
+        return Result;
+    }
+    std::string NumberToHex(size_t number){
+        std::stringstream ss;
+        ss << std::setw(16) << std::setfill('0') << std::hex << number;
+        std::string Result = ss.str();
+        return Result;
+    }
+    size_t HexToNumber(std::string hex){
+        size_t Result;
+        std::stringstream ss;
+        ss << std::hex << hex.c_str();
+        ss >> Result;
+        return Result;
+    }
+
+
+    /*
+    unsigned int x;   
+    std::stringstream ss;
+    ss << std::hex << "fffefffe";
+    ss >> x;
+    */
 };
