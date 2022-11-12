@@ -23,10 +23,6 @@ namespace Shell{
             }
             MainRecord.close();
         }
-        if(Local_Profile_Location != ""){
-            Caller->ReturnString=std::string("Already exists.");
-            return Caller;
-        }
         size_t iIT=0;
         for(size_t i=0;i<Format::Activitypub::ObjectDefinitions::Identifier_Type::IT_SIZE;i++){
             if((*Caller->Arguments)[1] == Format::Activitypub::ObjectDefinitions::Identifier_TypeString[i])iIT=i;
@@ -34,6 +30,15 @@ namespace Shell{
         Format::Activitypub::ObjectDefinitions::Identifier_Type IT=(Format::Activitypub::ObjectDefinitions::Identifier_Type)iIT;
         switch(IT){
             case Format::Activitypub::ObjectDefinitions::Identifier_Type::IT_PERSON:{
+                //[1] == Type;
+                //[2] == UserName;
+                //[3] == NULL; <- group name if multiple (groups will be implemented later)
+                //[4] == NULL;
+                //[5] == NULL;
+                if(Local_Profile_Location != ""){
+                    Caller->ReturnString=std::string("Already exists.");
+                    return Caller;
+                }
                 std::string DirToMake=std::string("Article");mkdir(DirToMake.c_str(),0777);
                 DirToMake+=std::string("/")+Format::NumberToHex(IT);mkdir(DirToMake.c_str(),0777);
                 std::deque<std::string> d = Format::listDirectories(DirToMake);
@@ -54,13 +59,26 @@ namespace Shell{
                 Caller->ReturnString=Actor.Actor_Json();
             }break;
             case Format::Activitypub::ObjectDefinitions::Identifier_Type::IT_NOTE:{
+                //[1] == Type;
+                //[2] == Author_UserName;
+                //[3] == Audience_UserName; <- group name if multiple (groups will be implemented later)
+                //[4] == name of the note;
+                //[5+] == the content of the note;
                 std::string DirToMake=std::string("Article");mkdir(DirToMake.c_str(),0777);
                 DirToMake+=std::string("/")+Format::NumberToHex(IT);mkdir(DirToMake.c_str(),0777);
                 std::deque<std::string> d = Format::listDirectories(DirToMake);
-                // Note_st(std::string site,std::string name,std::string content,std::string published,std::string attributedTo,std::string to,Identifier_st Identifier);
                 std::string to=(*Caller->Arguments)[3];
-                std::string content=(*Caller->Arguments)[4];
-                Format::Activitypub::ObjectDefinitions::Note_st Note(Settings::URL,"?name?",content,Format::currentDateAndTime(),UserName,to,{Format::Activitypub::ObjectDefinitions::Identifier_Type::IT_NOTE,d.size()+1});
+                std::string name=(*Caller->Arguments)[3];
+                std::string content;
+                for(size_t i=5;i<(*Caller->Arguments).size();i++){
+                    content+=(*Caller->Arguments)[i];
+                    if(i<(*Caller->Arguments).size()-1)content+=std::string(" ");
+                }
+                DirToMake+=std::string("/")+Format::NumberToHex(d.size()+1);mkdir(DirToMake.c_str(),0777);
+                Format::Activitypub::ObjectDefinitions::Note_st Note(Settings::URL,name,content,Format::currentDateAndTime(),UserName,to,{Format::Activitypub::ObjectDefinitions::Identifier_Type::IT_NOTE,d.size()+1});
+                std::ofstream NoteFile(std::string(DirToMake+std::string("/Note.json")).c_str());
+                NoteFile<<Note.Note_Json()<<std::endl;
+                NoteFile.close();
             }break;
             default:{
                 Caller->ReturnString=std::string("nothing created.");

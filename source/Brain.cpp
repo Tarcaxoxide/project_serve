@@ -50,6 +50,7 @@ namespace Brain{
         if(Local_Profile_Location != ""){
             std::ifstream Profile;
             Profile.open(std::string(Local_Profile_Location+std::string("/Profile.json")).c_str());
+            Profile.open(std::string(Local_Profile_Location+std::string("/Note.json")).c_str());
             if(Profile.is_open()){
                 std::string line;
                 Ret="";
