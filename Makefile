@@ -10,7 +10,7 @@ CFLAGS = -I$(INCDIR) -Werror -Ofast -fshort-wchar -mno-red-zone
 ASMFLAGS = -I$(INCDIR)
 LDFLAGS = -static -Bsymbolic
 
-SRCDIR := source
+SRCDIR := sources
 OBJDIR := build/OBJ
 BUILDDIR = build/BIN
 BOOTEFI := $(GNUEFI)/x86_64/bootloader/main.efi

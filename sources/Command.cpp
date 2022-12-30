@@ -3,7 +3,7 @@
 
 namespace Shell{
     Command_st* Command_st::BaseCommandReference=nullptr;
-    Database::Manager_cl DatabaseManager("data/");
+    Database::Manager_cl DatabaseManager("data/test.txt");
     Command_st BaseCommand("BaseCommand","(?this shouldn't ever be activated?)");
 };
 
@@ -11,16 +11,6 @@ namespace Shell{
     namespace Commands{
         Command_st* CreateFile(Command_st* Caller){
             std::string FileName=(*Caller->Arguments)[Caller->ArgumentIndex];
-
-            if(FileName == "CreateFile"){
-                Caller->ReturnString="File name not specified.";
-                return Caller;
-            }
-            if(!DatabaseManager.Create_File(FileName)){
-                Caller->ReturnString="File already exists.";
-                return Caller;
-            }
-            Caller->ReturnString="File created.";
             return Caller;
         }
     };
