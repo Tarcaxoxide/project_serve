@@ -33,15 +33,18 @@ $(BUILDDIR)/$(OSNAME): $(OBJS)
 	mkdir -p $(@D)
 	clang++ $(LDFLAGS) -o $@ $^
 
-.PHONY: clean run compile push
+.PHONY: full-clean clean run compile push
 
 clean:
 	rm -frv $(OBJDIR)/* $(BUILDDIR)/*
 
+full-clean:clean
+	rm -frv data/*
+
 
 compile: $(BUILDDIR)/$(OSNAME)
 
-push: clean compile
+push: clean compile full-clean
 	git add .
 	git commit -am "$(shell date)" 
 	git push "https://loganer%40vivaldi.net:$(shell cat ../git_token.txt)@github.com/Tarcaxoxide/project_serve.git"

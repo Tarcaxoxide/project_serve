@@ -5,7 +5,7 @@
 #include<fstream>
 
 namespace Database{
-	enum DatabaseEntryType_e:uint8_t{
+	enum DET_e:uint8_t{
 		DET_NULL=0x00,
 		DET_END=0x01,
 		DET_TEXT=0x02,
@@ -15,7 +15,7 @@ namespace Database{
 		DET_APP=0x06
 	};
     struct Entry_st{
-		DatabaseEntryType_e DatabaseEntryType;
+		DET_e DatabaseEntryType;
 		uint8_t Data[7];
 	}__attribute__((packed));
 	struct DatabaseFile_st{
@@ -26,5 +26,7 @@ namespace Database{
 		DatabaseFile_st DatabaseFile;
 		public:
 		Manager_cl(std::string FileName);
+		void Sync(bool RamToDisk);
+		void AddEntry(DET_e type,std::deque<uint8_t> dataToWrite);
     };
 };
