@@ -30,16 +30,13 @@ $(OBJDIR)/%_cpp.o:$(SRCDIR)/%.cpp
 
 
 $(BUILDDIR)/$(OSNAME): $(OBJS)
+	mkdir -p $(@D)
 	clang++ $(LDFLAGS) -o $@ $^
 
-.PHONY: clean run compile setup push
-setup:
-	@mkdir -p $(BUILDDIR)
-	@mkdir -p $(SRCDIR)
-	@mkdir -p $(OBJDIR)
+.PHONY: clean run compile push
 
 clean:
-	@rm -frv $(OBJDIR)/* $(BUILDDIR)/*
+	rm -frv $(OBJDIR)/* $(BUILDDIR)/*
 
 
 compile: $(BUILDDIR)/$(OSNAME)

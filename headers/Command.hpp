@@ -9,10 +9,10 @@
 #include <Variables.hpp>
 #include <cstdlib>
 #include <fstream>
-#include <Activitypub.hpp>
 #include <fcntl.h>           /* Definition of AT_* constants */
 #include <sys/stat.h>
 #include <Settings.hpp>
+#include<Database.hpp>
 
 namespace Shell{
     struct Command_st{
