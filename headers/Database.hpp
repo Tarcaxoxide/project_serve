@@ -26,7 +26,7 @@ namespace Database{
 		DatabaseFile_st DatabaseFile;
 		public:
 		Manager_cl(std::string FileName);
-		void Sync(bool RamToDisk);
-		void AddEntry(DET_e type,std::deque<uint8_t> dataToWrite);
+		bool Sync(bool RamToDisk);
+		void AddEntry(const DET_e type,const uint8_t dataToWrite[7]);
     };
 };
