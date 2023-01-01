@@ -11,6 +11,10 @@ namespace Shell{
     namespace Commands{
         Command_st* CreateFile(Command_st* Caller){
             std::string FileName=(*Caller->Arguments)[Caller->ArgumentIndex];
+            if(FileName == "CreateFile"){
+                Caller->ReturnString="No filename provided.";
+                return Caller;
+            }
             return Caller;
         }
     };
@@ -64,7 +68,7 @@ namespace Shell{
 };
 namespace Shell{
     void Initialize(){
-        BaseCommand.AddSubCommand(new Command_st("CreateFile",Shell::Commands::CreateFile,"(Creates a file)"));
+        BaseCommand.AddSubCommand(new Command_st("CreateFile",Shell::Commands::CreateFile,"(CreateFile [Filename])"));
     }
     std::string Command(std::deque<std::string> args,bool& KeepGoing){
         Command_st* PreviousCommand=(Command_st*)nullptr;

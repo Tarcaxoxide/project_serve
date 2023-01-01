@@ -53,4 +53,15 @@ namespace Database{
 		Entry.Data[6] = dataToWrite[6];
 		DatabaseFile.Data.push_back(Entry);
 	}
+	void Manager_cl::AddFile(std::deque<uint8_t> Data){
+		size_t size=Data.size()/8;
+		for(size_t a=0;a<size;a++){
+			uint8_t tmp[8]{0x00};
+			for(size_t b=0;b<8;b++){
+				tmp[b]=Data[(a*8)+b];
+			}
+			AddEntry((DET_e)tmp[0],(uint8_t[7]){tmp[1],tmp[2],tmp[3],tmp[4],tmp[5],tmp[6],tmp[7]});
+		}
+		AddEntry(DET_e::DET_END,(uint8_t[7]){0,0,0,0,0,0,0});
+	}
 };

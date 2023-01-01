@@ -28,5 +28,18 @@ namespace Database{
 		Manager_cl(std::string FileName);
 		bool Sync(bool RamToDisk);
 		void AddEntry(const DET_e type,const uint8_t dataToWrite[7]);
-    };
+		void AddFile(std::deque<uint8_t> Data);
+	};
 };
+
+
+/*
+	first entry is always a DET_END so if your traversing the data backwards
+	  you wont fall off the front.
+	Each file ends in a DET_END entry.
+	DET_NULL is used for padding.
+	######################
+		DET_END,H,E,L,L,O,\0,\0
+		DET_END,G,O,O,D,B,Y,E
+	######################
+*/
